@@ -1,0 +1,929 @@
+From cd7a641980fcaacc25696efabeed41b706e2395a Mon Sep 17 00:00:00 2001
+From: Ganesh K <ganesh.k@phytec.in>
+Date: Mon, 24 Jun 2019 19:48:07 +0530
+Subject: [PATCH] starting with xy files
+
+---
+ src/xbee/CMakeLists.txt   |   5 --
+ src/xbee/xbee.cxx         | 102 ------------------------
+ src/xbee/xbee.hpp         | 193 ----------------------------------------------
+ src/xbee/xbee.i           |  16 ----
+ src/xbee/xbee.json        |  61 ---------------
+ src/yg1006/CMakeLists.txt |   9 ---
+ src/yg1006/yg1006.c       |  77 ------------------
+ src/yg1006/yg1006.cxx     |  50 ------------
+ src/yg1006/yg1006.h       |  73 ------------------
+ src/yg1006/yg1006.hpp     |  87 ---------------------
+ src/yg1006/yg1006.json    |  67 ----------------
+ src/yg1006/yg1006_fti.c   |  82 --------------------
+ 12 files changed, 822 deletions(-)
+ delete mode 100644 src/xbee/CMakeLists.txt
+ delete mode 100644 src/xbee/xbee.cxx
+ delete mode 100644 src/xbee/xbee.hpp
+ delete mode 100644 src/xbee/xbee.i
+ delete mode 100644 src/xbee/xbee.json
+ delete mode 100644 src/yg1006/CMakeLists.txt
+ delete mode 100644 src/yg1006/yg1006.c
+ delete mode 100644 src/yg1006/yg1006.cxx
+ delete mode 100644 src/yg1006/yg1006.h
+ delete mode 100644 src/yg1006/yg1006.hpp
+ delete mode 100644 src/yg1006/yg1006.json
+ delete mode 100644 src/yg1006/yg1006_fti.c
+
+diff --git a/src/xbee/CMakeLists.txt b/src/xbee/CMakeLists.txt
+deleted file mode 100644
+index d41782d..0000000
+--- a/src/xbee/CMakeLists.txt
++++ /dev/null
+@@ -1,5 +0,0 @@
+-set (libname "xbee")
+-set (libdescription "XBee Serial Module")
+-set (module_src ${libname}.cxx)
+-set (module_hpp ${libname}.hpp)
+-upm_module_init(mraa)
+diff --git a/src/xbee/xbee.cxx b/src/xbee/xbee.cxx
+deleted file mode 100644
+index ba7ae22..0000000
+--- a/src/xbee/xbee.cxx
++++ /dev/null
+@@ -1,102 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2015 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#include <iostream>
+-#include <time.h>
+-
+-#include "xbee.hpp"
+-
+-using namespace upm;
+-using namespace std;
+-
+-static const int maxBuffer = 1024;
+-
+-XBee::XBee(int uart) :
+-  m_uart(uart)
+-{
+-}
+-
+-XBee::~XBee()
+-{
+-}
+-
+-bool XBee::dataAvailable(unsigned int millis)
+-{
+-  return m_uart.dataAvailable(millis);
+-}
+-
+-int XBee::readData(char *buffer, unsigned int len)
+-{
+-  return m_uart.read(buffer, len);
+-}
+-
+-std::string XBee::readDataStr(int len)
+-{
+-  return m_uart.readStr(len);
+-}
+-
+-int XBee::writeData(char *buffer, unsigned int len)
+-{
+-  m_uart.flush();
+-  return m_uart.write(buffer, len);
+-}
+-
+-int XBee::writeDataStr(std::string data)
+-{
+-  m_uart.flush();
+-  return m_uart.writeStr(data);
+-}
+-
+-mraa::Result XBee::setBaudRate(int baud)
+-{
+-  return m_uart.setBaudRate(baud);
+-}
+-
+-bool XBee::commandMode(std::string cmdChars, int guardTimeMS)
+-{
+-
+-  usleep(guardTimeMS * 1000);
+-
+-  writeDataStr(cmdChars);
+-
+-  usleep(guardTimeMS * 1000);
+-
+-  string resp;
+-  if (dataAvailable(1000))
+-    resp = readDataStr(maxBuffer);
+-
+-  if (resp.find("OK"))
+-    return true;
+-  else
+-    return false;
+-}
+-
+-string XBee::stringCR2LF(string str)
+-{
+-  for (size_t i=0; i<str.size(); i++)
+-    if (str[i] == '\r')
+-      str[i] = '\n';
+-  
+-  return str;
+-}
+diff --git a/src/xbee/xbee.hpp b/src/xbee/xbee.hpp
+deleted file mode 100644
+index 4e33128..0000000
+--- a/src/xbee/xbee.hpp
++++ /dev/null
+@@ -1,193 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2015 Intel Corporation.
+- *
+- * Thanks to Adafruit for supplying a google translated version of the
+- * Chinese datasheet and some clues in their code.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-#pragma once
+-
+-#include <string>
+-#include <iostream>
+-
+-#include <stdlib.h>
+-#include <unistd.h>
+-#include <string.h>
+-
+-#include <mraa/common.hpp>
+-#include <mraa/uart.hpp>
+-
+-#define XBEE_DEFAULT_UART 0
+-
+-namespace upm {
+-    /**
+-     * @brief XBee Modules Library
+-     * @defgroup xbee libupm-xbee
+-     * @ingroup sparkfun uart wifi
+-     */
+-
+-    /**
+-     * @library xbee
+-     * @sensor xbee
+-     * @comname XBee Serial Module
+-     * @type wifi
+-     * @man sparkfun
+-     * @con uart
+-     * @web https://www.sparkfun.com/products/11215
+-     *
+-     * @brief API for the XBee modules
+-     *
+-     * This is a generic UART driver for use with Digi XBee modules.
+-     * It was tested with the XBee S1 802.15.4 module and the XBee S6B
+-     * WiFi module.
+-     *
+-     * It provides basic UART support for sending and receiving data
+-     * to and from the device.  It is controlled by an AT or API
+-     * command set.
+-     *
+-     * It is connected at 9600 baud by default.
+-     *
+-     * These devices are typically configured using Digi's X-CTU
+-     * windows software, however it is possible of course to configure
+-     * them manually using AT commands.  See the examples.
+-     *
+-     * @image html xbee.jpg
+-     * <br><em>XBee Sensor image provided by SparkFun* under
+-     * <a href=https://creativecommons.org/licenses/by/2.0/>
+-     * CC BY 2.0</a>.</em>
+-     *
+-     * @snippet xbee.cxx Interesting
+-     */
+-
+-  class XBee {
+-  public:
+-
+-    /**
+-     * XBee object constructor
+-     *
+-     * @param uart Default UART to use (0 or 1). Default is 0.
+-     */
+-    XBee(int uart=XBEE_DEFAULT_UART);
+-
+-    /**
+-     * XBee object destructor
+-     */
+-    ~XBee();
+-
+-    /**
+-     * Checks to see if there is data available for reading
+-     *
+-     * @param millis Number of milliseconds to wait; 0 means no waiting
+-     * @return true if there is data available for reading
+-     */
+-    bool dataAvailable(unsigned int millis);
+-
+-    /**
+-     * Reads any available data into a user-supplied buffer. Note: the
+-     * call blocks until data is available for reading. Use
+-     * dataAvailable() to determine whether there is data available
+-     * beforehand, to avoid blocking.
+-     *
+-     * @param buffer Buffer to hold the data read
+-     * @param len Length of the buffer
+-     * @return Number of bytes read
+-     */
+-    int readData(char *buffer, unsigned int len);
+-
+-    /**
+-     * Reads any available data and returns it in a std::string. Note:
+-     * the call blocks until data is available for reading. Use
+-     * dataAvailable() to determine whether there is data available
+-     * beforehand, to avoid blocking.
+-     *
+-     * @param len Maximum length of the data to be returned
+-     * @return string containing the data read
+-     */
+-    std::string readDataStr(int len);
+-
+-    /**
+-     * Writes the data in the buffer to the device.  If you are
+-     * writing an AT command, be sure to terminate it with a carriage
+-     * return (\r)
+-     *
+-     * @param buffer Buffer to hold the data to write
+-     * @param len Length of the buffer
+-     * @return Number of bytes written
+-     */
+-    int writeData(char *buffer, unsigned len);
+-
+-    /**
+-     * Writes the std:string data to the device.  If you are writing an
+-     * AT command, be sure to terminate it with a carriage return (\r)
+-     *
+-     * @param data Buffer to write to the device
+-     * @return Number of bytes written
+-     */
+-    int writeDataStr(std::string data);
+-
+-    /**
+-     * Sets the baud rate for the device.  The default is 9600.
+-     *
+-     * @param baud Desired baud rate
+-     * @return true if successful
+-     */
+-    mraa::Result setBaudRate(int baud=9600);
+-
+-    /**
+-     * Attempts to enter AT Command Mode.  When Idle, data sent to the
+-     * device (assuming it is not in API mode) is silently transmitted
+-     * to the configured destination.  Running this command attempts
+-     * to place the device into command mode, allowing you to send AT
+-     * commands.  Note, after a configurable period of inactivity, the
+-     * device will exit command mode automatically (default 10
+-     * seconds).
+-     *
+-     * Both the cmdChars (+++) and the Guard Time can be configured
+-     * on the device to different values using AT configuration
+-     * commands.
+-     *
+-     * @param cmdChars The command mode characters, default "+++"
+-     * @param guardTimeMS The number of milliseconds to wait before and
+-     * after sending the command characters.  Default is 1000 (1 second).
+-     * @return true if successful (received an "OK"), false otherwise
+-     */
+-    bool commandMode(std::string cmdChars="+++", int guardTimeMS=1000);
+-
+-    /**
+-     * This is a convenience method that converts each CR (\r) in a
+-     * string to a LF (\n) and returns it.  This is useful for
+-     * outputting the response to an AT command for instance, which is
+-     * typically CR terminated.
+-     *
+-     * @param str The string to convert
+-     * @return The converted string
+-     */
+-    std::string stringCR2LF(std::string str);
+-
+-  protected:
+-    mraa::Uart m_uart;
+-
+-  private:
+-  };
+-}
+-
+-
+diff --git a/src/xbee/xbee.i b/src/xbee/xbee.i
+deleted file mode 100644
+index 840dbe4..0000000
+--- a/src/xbee/xbee.i
++++ /dev/null
+@@ -1,16 +0,0 @@
+-%include "../common_top.i"
+-
+-/* BEGIN Java syntax  ------------------------------------------------------- */
+-#ifdef SWIGJAVA
+-JAVA_JNI_LOADLIBRARY(javaupm_xbee)
+-#endif
+-/* END Java syntax */
+-
+-/* BEGIN Common SWIG syntax ------------------------------------------------- */
+-%include "carrays.i"
+-%{
+-#include "xbee.hpp"
+-%}
+-%include "xbee.hpp"
+-%array_class(char, charArray);
+-/* END Common SWIG syntax */
+diff --git a/src/xbee/xbee.json b/src/xbee/xbee.json
+deleted file mode 100644
+index 09dffd9..0000000
+--- a/src/xbee/xbee.json
++++ /dev/null
+@@ -1,61 +0,0 @@
+-{
+-    "Library": "xbee",
+-    "Description": "XBee modules Library",
+-    "Sensor Class": {
+-        "XBee": {
+-            "Name": "API for the XBee modules",
+-            "Description": "This is the UPM Module for the XBee modules. This is a generic UART driver for use with Digi XBee modules. It was tested with the XBee S1 802.15.4 module and the XBee S6B WiFi module. It provides basic UART support for sending and receiving data to and from the device.  It is controlled by an AT or API command set. It is connected at 9600 baud by default.",
+-            "Aliases": ["xbee", "XBee 1mW Trace Antenna - Series 1 (802.15.4)"],
+-            "Categories": ["wifi"],
+-            "Connections": ["uart"],
+-            "Project Type": ["prototyping", "commercial"],
+-            "Manufacturers": ["SparkFun"],
+-            "Image": "xbee.jpg",
+-            "Examples": {
+-                "Python": ["xbee.py"],
+-                "Node.js": ["xbee.js"],
+-                "C++": ["xbee.cxx"]
+-            },
+-            "Specifications": {
+-                "Vsource": {
+-                    "unit": "V",
+-                    "min": 2.8,
+-                    "max": 3.4
+-                },
+-                "Supply Current": {
+-                    "XBee": {
+-                        "unit": "mA",
+-                        "min" : 45,
+-                        "max" : 50
+-                    },
+-                    "XBee PRO": {
+-                        "min" : 55,
+-                        "max" : 215
+-                    }
+-                },
+-                "Operating Temperature": {
+-                    "unit": "°C",
+-                    "min": -40,
+-                    "max": 85
+-                },
+-                "Band": {
+-                    "unit": "GHz",
+-                    "frequency": 2.4
+-                }
+-            },
+-            "Platforms": {
+-                "Intel Edison": {
+-                    "Notes": ["Might need XBee shield"]
+-                },
+-                "Arduino 101": {
+-                    "Notes": ["Might need XBee shield"]
+-                }
+-            },
+-            "Urls": {
+-                "Product Pages": ["https://www.sparkfun.com/products/11215"],
+-                "Datasheets": ["https://www.sparkfun.com/datasheets/Wireless/Zigbee/XBee-Datasheet.pdf"],
+-                "Schematics": ["https://www.sparkfun.com/datasheets/Wireless/Zigbee/XBee-Dimensional.pdf"]
+-            }
+-        }
+-    }
+-}
+diff --git a/src/yg1006/CMakeLists.txt b/src/yg1006/CMakeLists.txt
+deleted file mode 100644
+index c73fe55..0000000
+--- a/src/yg1006/CMakeLists.txt
++++ /dev/null
+@@ -1,9 +0,0 @@
+-upm_mixed_module_init (NAME yg1006
+-    DESCRIPTION "Flame Sensor"
+-    C_HDR yg1006.h
+-    C_SRC yg1006.c
+-    CPP_HDR yg1006.hpp
+-    CPP_SRC yg1006.cxx
+-    FTI_SRC yg1006_fti.c
+-    CPP_WRAPS_C
+-    REQUIRES mraa)
+diff --git a/src/yg1006/yg1006.c b/src/yg1006/yg1006.c
+deleted file mode 100644
+index 4688d97..0000000
+--- a/src/yg1006/yg1006.c
++++ /dev/null
+@@ -1,77 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2016 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#include <assert.h>
+-#include "yg1006.h"
+-
+-yg1006_context yg1006_init(unsigned int pin)
+-{
+-    yg1006_context dev =
+-        (yg1006_context)malloc(sizeof(struct _yg1006_context));
+-
+-    if (!dev)
+-        return NULL;
+-
+-    dev->gpio = NULL;
+-
+-    // make sure MRAA is initialized
+-    int mraa_rv;
+-    if ((mraa_rv = mraa_init()) != MRAA_SUCCESS)
+-    {
+-        printf("%s: mraa_init() failed (%d).\n", __FUNCTION__, mraa_rv);
+-        yg1006_close(dev);
+-        return NULL;
+-    }
+-
+-    // initialize the MRAA context
+-
+-    if (!(dev->gpio = mraa_gpio_init(pin)))
+-    {
+-        printf("%s: mraa_gpio_init() failed.\n", __FUNCTION__);
+-        yg1006_close(dev);
+-        return NULL;
+-    }
+-
+-    mraa_gpio_dir(dev->gpio, MRAA_GPIO_IN);
+-
+-    return dev;
+-}
+-
+-void yg1006_close(yg1006_context dev)
+-{
+-    assert(dev != NULL);
+-
+-    if (dev->gpio)
+-        mraa_gpio_close(dev->gpio);
+-
+-    free(dev);
+-}
+-
+-bool yg1006_flame_detected(const yg1006_context dev)
+-{
+-    assert(dev != NULL);
+-
+-    // gpio is low when a flame is detected
+-    return (mraa_gpio_read(dev->gpio) ? false : true);
+-}
+diff --git a/src/yg1006/yg1006.cxx b/src/yg1006/yg1006.cxx
+deleted file mode 100644
+index 0f89b29..0000000
+--- a/src/yg1006/yg1006.cxx
++++ /dev/null
+@@ -1,50 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2014-2016 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#include <iostream>
+-#include <string>
+-#include <stdexcept>
+-
+-#include "yg1006.hpp"
+-
+-using namespace upm;
+-using namespace std;
+-
+-YG1006::YG1006(unsigned int pin) :
+-    m_yg1006(yg1006_init(pin))
+-{
+-    if (!m_yg1006)
+-        throw std::runtime_error(std::string(__FUNCTION__) +
+-                                 ": water_init() failed");
+-}
+-
+-YG1006::~YG1006()
+-{
+-    yg1006_close(m_yg1006);
+-}
+-
+-bool YG1006::flameDetected()
+-{
+-    return yg1006_flame_detected(m_yg1006);
+-}
+diff --git a/src/yg1006/yg1006.h b/src/yg1006/yg1006.h
+deleted file mode 100644
+index fe73fc0..0000000
+--- a/src/yg1006/yg1006.h
++++ /dev/null
+@@ -1,73 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2016 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-#pragma once
+-
+-#include <stdlib.h>
+-#include <stdio.h>
+-#include <upm.h>
+-#include <mraa/gpio.h>
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-    /**
+-     * @file yg1006.h
+-     * @library yg1006
+-     * @brief C API for the YG1006 Flame Sensor
+-     *
+-     * @include yg1006.c
+-     */
+-
+-    /**
+-     * Device context
+-     */
+-    typedef struct _yg1006_context {
+-        mraa_gpio_context        gpio;
+-    } *yg1006_context;
+-
+-    /**
+-     * YG1006 initializer
+-     *
+-     * @param pin Digital pin to use
+-     * @return an initialized device context on success, NULL on error.
+-     */
+-    yg1006_context yg1006_init(unsigned int pin);
+-
+-    /**
+-     * YG1006 close function
+-     */
+-    void yg1006_close(yg1006_context dev);
+-
+-    /**
+-     * Determines whether a flame has been detected
+-     *
+-     * @return true if a flame or another comparable light source has
+-     * been detected
+-     */
+-    bool yg1006_flame_detected(const yg1006_context dev);
+-
+-#ifdef __cplusplus
+-}
+-#endif
+diff --git a/src/yg1006/yg1006.hpp b/src/yg1006/yg1006.hpp
+deleted file mode 100644
+index 05aebeb..0000000
+--- a/src/yg1006/yg1006.hpp
++++ /dev/null
+@@ -1,87 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2014-2016 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-#pragma once
+-
+-#include <string>
+-#include "yg1006.h"
+-
+-namespace upm {
+-    /**
+-     * @brief YG1006 Flame Sensor
+-     * @defgroup yg1006 libupm-yg1006
+-     * @ingroup seeed gpio light hak
+-     */
+-
+-    /**
+-     * @library yg1006
+-     * @sensor yg1006
+-     * @comname Flame Sensor
+-     * @altname Grove Flame Sensor
+-     * @type light
+-     * @man seeed
+-     * @web http://www.seeedstudio.com/wiki/Grove_-_Flame_Sensor
+-     * @con gpio
+-     * @kit hak
+-     *
+-     * @brief API for the YG1006 Flame Sensor
+-     *
+-     *   UPM module for the YG1006 flame sensor. It detects a flame or any
+-     *   other light source in the 760-1,100 nm wavelength range.
+-     *
+-     * @image html yg1006.jpg
+-     * @snippet yg1006.cxx Interesting
+-     */
+-  class YG1006 {
+-  public:
+-
+-    /**
+-     * YG1006 constructor
+-     *
+-     * @param pin Digital pin to use
+-     */
+-    YG1006(unsigned int pin);
+-
+-    /**
+-     * YG1006 destructor
+-     */
+-    ~YG1006();
+-
+-    /**
+-     * Determines whether a flame has been detected
+-     *
+-     * @return true if a flame or another comparable light source has
+-     * been detected
+-     */
+-    bool flameDetected();
+-
+-  private:
+-    /* Disable implicit copy and assignment operators */
+-    YG1006(const YG1006&) = delete;
+-    YG1006 &operator=(const YG1006&) = delete;
+-
+-    yg1006_context m_yg1006;
+-  };
+-}
+-
+-
+diff --git a/src/yg1006/yg1006.json b/src/yg1006/yg1006.json
+deleted file mode 100644
+index 1248734..0000000
+--- a/src/yg1006/yg1006.json
++++ /dev/null
+@@ -1,67 +0,0 @@
+-{
+-    "Library": "yg1006",
+-    "Description": "YG1006 Flame Sensor Library",
+-    "Sensor Class": {
+-        "YG1006": {
+-            "Name": "API for the YG1006 Flame Sensor",
+-            "Description": "This is the UPM Module for the YG1006 Flame Sensor. The Grove - Flame Sensor can be used to detect fire source or other light sources of the wavelength in the range of 760nm - 1100 nm. It is based on the YG1006 sensor which is a high speed and high sensitive NPN silicon phototransistor. Due to its black epoxy, the sensor is sensitive to infrared radiation. In fire fighting robot game, The sensor plays a very important role, it can be used as a robot eyes to find the fire source.",
+-            "Aliases": ["yg1006", "Grove - Flame Sensor"],
+-            "Categories": ["light"],
+-            "Connections": ["gpio"],
+-            "Project Type": ["prototyping", "industrial", "robotics"],
+-            "Manufacturers": ["Seeed", "Texas Instruments"],
+-            "Kits": ["hak"],
+-            "Image": "yg1006.jpg",
+-            "Examples": {
+-                "Java": ["YG1006_Example.java"],
+-                "Python": ["yg1006.py"],
+-                "Node.js": ["yg1006.js"],
+-                "C++": ["yg1006.cxx"],
+-                "C": ["yg1006.c"]
+-            },
+-            "Specifications": {
+-                "Vsource": {
+-                    "unit": "V",
+-                    "min": 4.75,
+-                    "max": 5.30
+-                },
+-                "Supply Current": {
+-                    "unit": "mA",
+-                    "typ" : 20
+-                },
+-                "Operating Temperature": {
+-                    "unit": "°C",
+-                    "min": -25,
+-                    "max": 85
+-                },
+-                "Response Time": {
+-                    "unit": "us",
+-                    "time": 15
+-                },
+-                "Light Range": {
+-                    "unit": "nm",
+-                    "min" : 760,
+-                    "max" : 1100
+-                },
+-                "Effective Range": {
+-                    "unit": "m",
+-                    "min" : 0,
+-                    "max" : 1
+-                }
+-            },
+-            "Platforms": {
+-                "Intel Edison": {
+-                    "Notes": ["Might need Grove base shield"]
+-                },
+-                "Arduino 101": {
+-                    "Notes": ["Might need Grove base shield"]
+-                }
+-            },
+-            "Urls": {
+-                "Product Pages": ["https://www.seeedstudio.com/Grove-Flame-Sensor-p-1450.html", "http://wiki.seeed.cc/Grove-Flame_Sensor/"],
+-                "Datasheets": ["https://raw.githubusercontent.com/SeeedDocument/Grove-Flame_Sensor/master/res/LM293D.pdf"],
+-                "Schematics": ["https://raw.githubusercontent.com/SeeedDocument/Grove-Flame_Sensor/master/res/Grove-Directional_Light_Sensor_Eagle_File.zip"]
+-            }
+-        }
+-    }
+-}
+diff --git a/src/yg1006/yg1006_fti.c b/src/yg1006/yg1006_fti.c
+deleted file mode 100644
+index 275a94c..0000000
+--- a/src/yg1006/yg1006_fti.c
++++ /dev/null
+@@ -1,82 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2016 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#include "yg1006.h"
+-#include <upm_fti.h>
+-
+-/**
+- * This file implements the Function Table Interface (FTI) for this sensor
+- */
+-
+-const char upm_yg1006_name[] = "YG1006";
+-const char upm_yg1006_description[] = "Flame sensor";
+-const upm_protocol_t upm_yg1006_protocol[] = {UPM_GPIO};
+-const upm_sensor_t upm_yg1006_category[] = {UPM_BINARY};
+-
+-// forward declarations
+-const void* upm_yg1006_get_ft(upm_sensor_t sensor_type);
+-void* upm_yg1006_init_name();
+-void upm_yg1006_close(void *dev);
+-upm_result_t upm_yg1006_flame_detected(void *dev, bool *value);
+-
+-static const upm_sensor_ft ft =
+-{
+-  .upm_sensor_init_name = upm_yg1006_init_name,
+-  .upm_sensor_close = upm_yg1006_close,
+-};
+-
+-static const upm_binary_ft bft =
+-{
+-  .upm_binary_get_value = upm_yg1006_flame_detected,
+-};
+-
+-const void* upm_yg1006_get_ft(upm_sensor_t sensor_type)
+-{
+-  switch(sensor_type)
+-    {
+-    case UPM_SENSOR:
+-      return &ft;
+-    case UPM_BINARY:
+-      return &bft;
+-    default:
+-      return NULL;
+-    }
+-}
+-
+-void *upm_yg1006_init_name()
+-{
+-  return NULL;
+-}
+-
+-void upm_yg1006_close(void *dev)
+-{
+-  yg1006_close((yg1006_context)dev);
+-}
+-
+-upm_result_t upm_yg1006_flame_detected(void *dev, bool *value)
+-{
+-  *value = yg1006_flame_detected((yg1006_context)dev);
+-
+-  return UPM_SUCCESS;
+-}
+-- 
+2.7.4
+

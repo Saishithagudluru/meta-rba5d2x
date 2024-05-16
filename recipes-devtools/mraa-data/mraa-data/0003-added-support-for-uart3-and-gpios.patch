@@ -1,0 +1,76 @@
+From 0f74855e0939c6f1843b36b4983df64868c9b67a Mon Sep 17 00:00:00 2001
+From: "prasanth .k" <prasanth.k@phytecembedded.in>
+Date: Thu, 10 Dec 2020 11:34:15 +0530
+Subject: [PATCH 3/3] added support for uart3 and gpios
+
+Signed-off-by: prasanth .k <prasanth.k@phytecembedded.in>
+---
+ src/arm/sama5.c | 38 ++++++++++++++++++++++++++++++++++----
+ 1 file changed, 34 insertions(+), 4 deletions(-)
+
+diff --git a/src/arm/sama5.c b/src/arm/sama5.c
+index d4cb2cf..8fb761f 100644
+--- a/src/arm/sama5.c
++++ b/src/arm/sama5.c
+@@ -156,9 +156,10 @@ mraa_sama5()
+         uart2_enabled = 0;
+ 
+     if (mraa_file_exist("/sys/class/tty/ttyS3"))
+-        uart4_enabled = 1;
+-    else
+-        uart3_enabled = 0; 
++        uart3_enabled = 1;
++
++    if (mraa_file_exist("/sys/class/tty/ttyS4"))
++        uart4_enabled = 0;
+ 
+     mraa_board_t* b = (mraa_board_t*) calloc(1, sizeof(mraa_board_t));
+     if (b == NULL)
+@@ -539,6 +540,33 @@ strncpy(b->pins[48].name,"PB07", MRAA_PIN_NAME_SIZE);
+     b->pins[73].capabilities = (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 };
+     b->pins[73].aio.pinmap = 6;
+ 
++    strncpy(b->pins[74].name, "PB01_PWM_mBUS1", MRAA_PIN_NAME_SIZE);
++    b->pins[74].capabilities = (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 };
++    b->pins[74].aio.pinmap = 6;
++
++   strncpy(b->pins[75].name,"PB00_INT_mBUS1", MRAA_PIN_NAME_SIZE);
++    b->pins[75].capabilities = (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 };
++    b->pins[75].gpio.pinmap = (1*32 + 0);
++    b->pins[75].gpio.parent_id = 0;
++    b->pins[75].gpio.mux_total = 0;
++    b->pins[75].uart.mux_total = 0;
++
++   strncpy(b->pins[76].name,"PB2_RST_mBUS1", MRAA_PIN_NAME_SIZE);
++    b->pins[76].capabilities = (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 };
++    b->pins[76].gpio.pinmap = (1*32 + 2);
++    b->pins[76].gpio.parent_id = 0;
++    b->pins[76].gpio.mux_total = 0;
++    b->pins[76].uart.mux_total = 0;
++
++    strncpy(b->pins[77].name, "PB11_URXD3", MRAA_PIN_NAME_SIZE);
++    b->pins[77].capabilities = (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 0, 1 };
++    b->pins[77].uart.mux_total = 0;
++
++    strncpy(b->pins[78].name, "PB12_UTXD3", MRAA_PIN_NAME_SIZE);
++    b->pins[78].capabilities = (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 0, 1 };
++    b->pins[78].uart.mux_total = 0;
++
++
+     b->aio_non_seq = 1;
+     b->aio_dev[6].pin = 73;   
+    
+@@ -567,7 +595,9 @@ strncpy(b->pins[48].name,"PB07", MRAA_PIN_NAME_SIZE);
+      /*****UART4****/
+     b->uart_dev[4].rx = 69;
+     b->uart_dev[4].tx = 68;
+-
++     /*****UART3****/
++   b->uart_dev[3].rx=77;
++   b->uart_dev[3].tx=78;
+ 
+     b->gpio_count = 0;
+     int i;
+-- 
+2.7.4
+

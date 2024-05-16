@@ -1,0 +1,44 @@
+From bc58ead02bc4d4a3689378a8852984f77d6c04a5 Mon Sep 17 00:00:00 2001
+From: Ganesh K <ganesh.k@phytec.in>
+Date: Sat, 4 Jan 2020 16:02:44 +0530
+Subject: [PATCH] added support for adc in mikrobus
+
+Signed-off-by: Ganesh K <ganesh.k@phytec.in>
+---
+ src/arm/sama5.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/src/arm/sama5.c b/src/arm/sama5.c
+index 51ba4ff..d9ca517 100644
+--- a/src/arm/sama5.c
++++ b/src/arm/sama5.c
+@@ -170,9 +170,9 @@ mraa_sama5()
+         goto error;
+     }
+ 
+-    b->aio_count = 4;
+-    b->adc_raw = 1;
+-    b->adc_supported = 1;
++    b->aio_count = 7;
++    b->adc_raw = 12;
++    b->adc_supported = 12;
+ 
+     b->pwm_default_period = 500;
+     b->pwm_max_period = 2147483;
+@@ -534,6 +534,13 @@ strncpy(b->pins[48].name,"PB07", MRAA_PIN_NAME_SIZE);
+     b->pins[72].capabilities = (mraa_pincapabilities_t){ 1, 0, 1, 0, 0, 0, 0, 0 };
+     b->pins[72].pwm.pinmap = 1;
+     b->pins[72].pwm.mux_total = 0;
++ 
++    strncpy(b->pins[73].name, "PD25_AN_mBUS1", MRAA_PIN_NAME_SIZE);
++    b->pins[73].capabilities = (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 };
++    b->pins[73].aio.pinmap = 6;
++
++    b->aio_non_seq = 1;
++    b->aio_dev[6].pin = 73;   
+    
+     b->i2c_bus_count = 3;
+     b->def_i2c_bus = 2;
+-- 
+2.7.4
+

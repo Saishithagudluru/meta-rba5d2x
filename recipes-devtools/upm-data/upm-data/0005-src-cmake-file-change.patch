@@ -1,0 +1,25 @@
+From 5ce82c91e42f52bcb51700f212dffd1bc56a8405 Mon Sep 17 00:00:00 2001
+From: Ganesh K <ganesh.k@phytec.in>
+Date: Mon, 24 Jun 2019 15:41:56 +0530
+Subject: [PATCH 5/5] src cmake file change
+
+---
+ src/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index e19cda2..aeb77d3 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -926,7 +926,7 @@ endif()
+ # Iterate over each directory in MODULE_LIST
+ foreach(subdir ${MODULE_LIST})
+   if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${subdir}/CMakeLists.txt)
+-    add_subdirectory(${subdir})
++#    add_subdirectory(${subdir})
+   endif()
+ endforeach()
+ 
+-- 
+2.7.4
+

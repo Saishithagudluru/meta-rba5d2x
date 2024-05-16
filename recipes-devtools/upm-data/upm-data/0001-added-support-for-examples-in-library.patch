@@ -1,0 +1,26 @@
+From 9f212f7afedc46284d0520b5ff013335958d018a Mon Sep 17 00:00:00 2001
+From: Ganesh K <ganesh.k@phytec.in>
+Date: Mon, 17 Feb 2020 20:24:16 +0530
+Subject: [PATCH] added support for examples in library
+
+Signed-off-by: Ganesh K <ganesh.k@phytec.in>
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 3d8b7eb..4fa33ce 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -9,7 +9,7 @@ option (BUILDSWIGPYTHON "Build swig python modules" ON)
+ option (BUILDSWIGNODE "Build swig node modules" ON)
+ option (BUILDSWIGJAVA "Build swig java modules" OFF)
+ option (BUILDCORDOVA "Build cordova bindings" OFF)
+-#option (BUILDEXAMPLES "Build C/C++/JAVA examples" OFF)
++option (BUILDEXAMPLES "Build C/C++/JAVA examples" ON)
+ option (IPK "Generate IPK using CPack" OFF)
+ option (RPM "Generate RPM using CPack" OFF)
+ option (NPM "Generate NPM/GYP tarballs" OFF)
+-- 
+2.7.4
+

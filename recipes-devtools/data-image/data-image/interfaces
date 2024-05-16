@@ -1,0 +1,16 @@
+# interfaces
+
+# The primary network interface (dhcp)
+#auto eth0
+#iface eth0 inet dhcp
+
+# The primary network interface (static)
+auto eth0
+iface eth0 inet static
+	address 192.168.0.5
+	gateway 192.168.0.1
+	netmask 255.255.255.0
+
+# The loopback network interface
+auto lo
+iface lo inet loopback

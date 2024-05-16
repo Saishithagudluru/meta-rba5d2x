@@ -1,0 +1,5481 @@
+From 5be74e7e34004c8ef8f23ceb917e4a24f11949bd Mon Sep 17 00:00:00 2001
+From: Ganesh K <ganesh.k@phytec.in>
+Date: Mon, 24 Jun 2019 19:37:36 +0530
+Subject: [PATCH 16/16] starting with uv files
+
+---
+ src/uartat/CMakeLists.txt      |   8 -
+ src/uartat/uartat.c            | 410 --------------------------------
+ src/uartat/uartat.cxx          | 173 --------------
+ src/uartat/uartat.h            | 282 ----------------------
+ src/uartat/uartat.hpp          | 265 ---------------------
+ src/uartat/uartat.i            |  16 --
+ src/uartat/uartat.json         |  25 --
+ src/uartat/uartat_defs.h       |  54 -----
+ src/uln200xa/CMakeLists.txt    |   8 -
+ src/uln200xa/uln200xa.c        | 260 --------------------
+ src/uln200xa/uln200xa.cxx      |  66 ------
+ src/uln200xa/uln200xa.h        | 116 ---------
+ src/uln200xa/uln200xa.hpp      | 116 ---------
+ src/uln200xa/uln200xa.i        |  15 --
+ src/uln200xa/uln200xa.json     |  53 -----
+ src/uln200xa/uln200xa_defs.h   |  41 ----
+ src/ultrasonic/CMakeLists.txt  |   5 -
+ src/ultrasonic/ultrasonic.cxx  | 102 --------
+ src/ultrasonic/ultrasonic.hpp  | 122 ----------
+ src/ultrasonic/ultrasonic.i    |  16 --
+ src/ultrasonic/ultrasonic.json |  61 -----
+ src/urm37/CMakeLists.txt       |   9 -
+ src/urm37/urm37.c              | 393 -------------------------------
+ src/urm37/urm37.cxx            |  98 --------
+ src/urm37/urm37.h              | 159 -------------
+ src/urm37/urm37.hpp            | 159 -------------
+ src/urm37/urm37.i              |  14 --
+ src/urm37/urm37.json           |  50 ----
+ src/urm37/urm37_fti.c          | 109 ---------
+ src/vcap/CMakeLists.txt        |  10 -
+ src/vcap/vcap.cxx              | 524 -----------------------------------------
+ src/vcap/vcap.hpp              | 215 -----------------
+ src/vcap/vcap.i                |  14 --
+ src/vcap/vcap.json             |  24 --
+ src/vdiv/CMakeLists.txt        |   8 -
+ src/vdiv/vdiv.c                | 130 ----------
+ src/vdiv/vdiv.cxx              |  68 ------
+ src/vdiv/vdiv.h                | 147 ------------
+ src/vdiv/vdiv.hpp              |  99 --------
+ src/vdiv/vdiv.json             |  70 ------
+ src/vdiv/vdiv_fti.c            | 118 ----------
+ src/veml6070/CMakeLists.txt    |   8 -
+ src/veml6070/veml6070.c        | 108 ---------
+ src/veml6070/veml6070.cxx      |  55 -----
+ src/veml6070/veml6070.h        | 101 --------
+ src/veml6070/veml6070.hpp      | 112 ---------
+ src/veml6070/veml6070.i        |  14 --
+ src/veml6070/veml6070.json     |  55 -----
+ 48 files changed, 5085 deletions(-)
+ delete mode 100644 src/uartat/CMakeLists.txt
+ delete mode 100644 src/uartat/uartat.c
+ delete mode 100644 src/uartat/uartat.cxx
+ delete mode 100644 src/uartat/uartat.h
+ delete mode 100644 src/uartat/uartat.hpp
+ delete mode 100644 src/uartat/uartat.i
+ delete mode 100644 src/uartat/uartat.json
+ delete mode 100644 src/uartat/uartat_defs.h
+ delete mode 100644 src/uln200xa/CMakeLists.txt
+ delete mode 100644 src/uln200xa/uln200xa.c
+ delete mode 100644 src/uln200xa/uln200xa.cxx
+ delete mode 100644 src/uln200xa/uln200xa.h
+ delete mode 100644 src/uln200xa/uln200xa.hpp
+ delete mode 100644 src/uln200xa/uln200xa.i
+ delete mode 100644 src/uln200xa/uln200xa.json
+ delete mode 100644 src/uln200xa/uln200xa_defs.h
+ delete mode 100644 src/ultrasonic/CMakeLists.txt
+ delete mode 100644 src/ultrasonic/ultrasonic.cxx
+ delete mode 100644 src/ultrasonic/ultrasonic.hpp
+ delete mode 100644 src/ultrasonic/ultrasonic.i
+ delete mode 100644 src/ultrasonic/ultrasonic.json
+ delete mode 100644 src/urm37/CMakeLists.txt
+ delete mode 100644 src/urm37/urm37.c
+ delete mode 100644 src/urm37/urm37.cxx
+ delete mode 100644 src/urm37/urm37.h
+ delete mode 100644 src/urm37/urm37.hpp
+ delete mode 100644 src/urm37/urm37.i
+ delete mode 100644 src/urm37/urm37.json
+ delete mode 100644 src/urm37/urm37_fti.c
+ delete mode 100644 src/vcap/CMakeLists.txt
+ delete mode 100644 src/vcap/vcap.cxx
+ delete mode 100644 src/vcap/vcap.hpp
+ delete mode 100644 src/vcap/vcap.i
+ delete mode 100644 src/vcap/vcap.json
+ delete mode 100644 src/vdiv/CMakeLists.txt
+ delete mode 100644 src/vdiv/vdiv.c
+ delete mode 100644 src/vdiv/vdiv.cxx
+ delete mode 100644 src/vdiv/vdiv.h
+ delete mode 100644 src/vdiv/vdiv.hpp
+ delete mode 100644 src/vdiv/vdiv.json
+ delete mode 100644 src/vdiv/vdiv_fti.c
+ delete mode 100644 src/veml6070/CMakeLists.txt
+ delete mode 100644 src/veml6070/veml6070.c
+ delete mode 100644 src/veml6070/veml6070.cxx
+ delete mode 100644 src/veml6070/veml6070.h
+ delete mode 100644 src/veml6070/veml6070.hpp
+ delete mode 100644 src/veml6070/veml6070.i
+ delete mode 100644 src/veml6070/veml6070.json
+
+diff --git a/src/uartat/CMakeLists.txt b/src/uartat/CMakeLists.txt
+deleted file mode 100644
+index 4bd5ed7..0000000
+--- a/src/uartat/CMakeLists.txt
++++ /dev/null
+@@ -1,8 +0,0 @@
+-upm_mixed_module_init (NAME uartat
+-    DESCRIPTION "Generic UART Driver for Serial AT Command Driven Devices"
+-    C_HDR uartat.h uartat_defs.h
+-    C_SRC uartat.c
+-    CPP_HDR uartat.hpp
+-    CPP_SRC uartat.cxx
+-    CPP_WRAPS_C
+-    REQUIRES mraa utilities-c)
+diff --git a/src/uartat/uartat.c b/src/uartat/uartat.c
+deleted file mode 100644
+index f3ab052..0000000
+--- a/src/uartat/uartat.c
++++ /dev/null
+@@ -1,410 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2017 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#include <string.h>
+-#include <assert.h>
+-
+-#include "uartat.h"
+-
+-#include "upm_utilities.h"
+-
+-#define UARTAT_MAX_BUFFER (1024)
+-
+-// milliseconds
+-#define UARTAT_MAX_WAIT   (1000)
+-
+-// milliseconds
+-#define UARTAT_DEFAULT_RESP_DELAY   (250)
+-
+-static uartat_context _uartat_preinit()
+-{
+-    // make sure MRAA is initialized
+-    int mraa_rv;
+-    if ((mraa_rv = mraa_init()) != MRAA_SUCCESS)
+-    {
+-        printf("%s: mraa_init() failed (%d).\n", __FUNCTION__, mraa_rv);
+-        return NULL;
+-    }
+-
+-    uartat_context dev =
+-        (uartat_context)malloc(sizeof(struct _uartat_context));
+-
+-    if (!dev)
+-        return NULL;
+-
+-    // zero out context
+-    memset((void *)dev, 0, sizeof(struct _uartat_context));
+-
+-    dev->cmd_resp_wait_ms = UARTAT_DEFAULT_RESP_DELAY;
+-
+-    return dev;
+-}
+-
+-static uartat_context _uartat_postinit(uartat_context dev,
+-                                       unsigned int baudrate)
+-{
+-    assert(dev != NULL);
+-
+-    if (uartat_set_baudrate(dev, baudrate))
+-    {
+-        printf("%s: uartat_set_baudrate() failed.\n", __FUNCTION__);
+-        uartat_close(dev);
+-        return NULL;
+-    }
+-
+-    if (uartat_set_flow_control(dev, UARTAT_FLOW_CONTROL_NONE))
+-    {
+-        printf("%s: uartat_set_flow_control() failed.\n", __FUNCTION__);
+-        uartat_close(dev);
+-        return NULL;
+-    }
+-
+-    return dev;
+-}
+-
+-// uart init
+-uartat_context uartat_init(unsigned int uart, unsigned int baudrate)
+-{
+-    uartat_context dev;
+-
+-    if (!(dev = _uartat_preinit()))
+-        return NULL;
+-
+-    // initialize the MRAA context
+-
+-    // uart, default should be 8N1
+-    if (!(dev->uart = mraa_uart_init(uart)))
+-    {
+-        printf("%s: mraa_uart_init() failed.\n", __FUNCTION__);
+-        uartat_close(dev);
+-        return NULL;
+-    }
+-
+-    return _uartat_postinit(dev, baudrate);
+-}
+-
+-// uart tty init
+-uartat_context uartat_init_tty(const char *uart_tty, unsigned int baudrate)
+-{
+-    uartat_context dev;
+-
+-    if (!(dev = _uartat_preinit()))
+-        return NULL;
+-
+-    // initialize the MRAA context
+-
+-    // uart, default should be 8N1
+-    if (!(dev->uart = mraa_uart_init_raw(uart_tty)))
+-    {
+-        printf("%s: mraa_uart_init_raw() failed.\n", __FUNCTION__);
+-        uartat_close(dev);
+-        return NULL;
+-    }
+-
+-    return _uartat_postinit(dev, baudrate);
+-}
+-
+-void uartat_close(uartat_context dev)
+-{
+-    assert(dev != NULL);
+-
+-    if (dev->uart)
+-        mraa_uart_stop(dev->uart);
+-
+-    free(dev);
+-}
+-
+-int uartat_read(const uartat_context dev, char *buffer, size_t len)
+-{
+-    assert(dev != NULL);
+-
+-    // uart
+-    return mraa_uart_read(dev->uart, buffer, len);
+-}
+-
+-int uartat_write(const uartat_context dev, const char *buffer, size_t len)
+-{
+-    assert(dev != NULL);
+-
+-    int rv = mraa_uart_write(dev->uart, buffer, len);
+-    mraa_uart_flush(dev->uart);
+-
+-    return rv;
+-}
+-
+-bool uartat_data_available(const uartat_context dev, unsigned int millis)
+-{
+-    assert(dev != NULL);
+-
+-    if (mraa_uart_data_available(dev->uart, millis))
+-        return true;
+-    else
+-        return false;
+-}
+-
+-upm_result_t uartat_set_baudrate(const uartat_context dev,
+-                                 unsigned int baudrate)
+-{
+-    assert(dev != NULL);
+-
+-    if (mraa_uart_set_baudrate(dev->uart, baudrate))
+-    {
+-        printf("%s: mraa_uart_set_baudrate() failed.\n", __FUNCTION__);
+-        return UPM_ERROR_OPERATION_FAILED;
+-    }
+-
+-    return UPM_SUCCESS;
+-}
+-
+-void uartat_set_response_wait_time(const uartat_context dev,
+-                                   unsigned int wait_time)
+-{
+-    assert(dev != NULL);
+-
+-    dev->cmd_resp_wait_ms = wait_time;
+-}
+-
+-bool uartat_command_mode(const uartat_context dev, const char *cmd_chars,
+-                         unsigned int guard_ms)
+-{
+-    assert(dev != NULL);
+-
+-    uartat_drain(dev);
+-
+-    upm_delay_ms(guard_ms);
+-
+-    uartat_write(dev, cmd_chars, strlen(cmd_chars));
+-
+-    upm_delay_ms(guard_ms);
+-
+-    char resp[UARTAT_MAX_BUFFER];
+-    if (uartat_data_available(dev, UARTAT_MAX_WAIT))
+-    {
+-        int rv = uartat_read(dev, resp, UARTAT_MAX_BUFFER);
+-
+-        if (rv > 0 && (strstr(resp, "OK") || strstr(resp, "0")))
+-            return true;
+-    }
+-
+-    return false;
+-}
+-
+-bool uartat_in_command_mode(const uartat_context dev)
+-{
+-    assert(dev != NULL);
+-
+-    static int buflen = 32;
+-    char buffer[buflen];
+-
+-    if (uartat_command_with_response(dev, "AT\r", buffer, buflen) <= 0)
+-        return false;
+-
+-    // depending on verbosity, you may get "OK" or "0".  Try to catch both.
+-    if (strstr(buffer, "OK") || strstr(buffer, "0"))
+-        return true;
+-    else
+-        return false;
+-}
+-
+-void uartat_drain(const uartat_context dev)
+-{
+-    assert(dev != NULL);
+-
+-    char resp[UARTAT_MAX_BUFFER];
+-    int rv;
+-    while (uartat_data_available(dev, 0))
+-    {
+-        rv = uartat_read(dev, resp, UARTAT_MAX_BUFFER);
+-        if (rv < 0)
+-        {
+-            printf("%s: read failed\n", __FUNCTION__);
+-            return;
+-        }
+-        // printf("%s: Tossed %d bytes\n", __FUNCTION__, rv);
+-    }
+-
+-    return;
+-}
+-
+-int uartat_command_with_response(const uartat_context dev,
+-                                 const char *cmd,
+-                                 char *resp, size_t resp_len)
+-{
+-    assert(dev != NULL);
+-    assert(cmd != NULL);
+-
+-    uartat_drain(dev);
+-    if (uartat_write(dev, cmd, strlen(cmd)) < 0)
+-    {
+-        printf("%s: uartat_write failed\n", __FUNCTION__);
+-        return -1;
+-    }
+-
+-    if (resp && resp_len > 1)
+-    {
+-        memset(resp, 0, resp_len);
+-
+-        upm_clock_t clock = upm_clock_init();
+-
+-        size_t idx = 0;
+-
+-        do
+-        {
+-            if (uartat_data_available(dev, 1))
+-            {
+-                int rv = uartat_read(dev, &resp[idx], 1);
+-
+-                if (rv < 0)
+-                    return rv;
+-
+-                if (dev->filter_cr && resp[idx] == '\r')
+-                    continue;
+-
+-                if (idx >= resp_len - 1)
+-                    return idx;
+-
+-                idx++;
+-            }
+-        } while (upm_elapsed_ms(&clock) < dev->cmd_resp_wait_ms);
+-
+-        return idx;
+-    }
+-    else
+-    {
+-        upm_delay_ms(dev->cmd_resp_wait_ms);
+-        uartat_drain(dev);
+-    }
+-
+-    return 0;
+-}
+-
+-bool uartat_command_waitfor(const uartat_context dev, const char *cmd,
+-                            char *resp, size_t resp_len,
+-                            const char *wait_string,
+-                            unsigned int millis)
+-{
+-    assert(dev != NULL);
+-    assert(cmd != NULL);
+-    assert(resp != NULL);
+-    assert(resp_len > 0);
+-    assert(wait_string != NULL);
+-
+-    uartat_drain(dev);
+-    if (uartat_write(dev, cmd, strlen(cmd)) < 0)
+-    {
+-        printf("%s: uartat_write failed\n", __FUNCTION__);
+-        return -1;
+-    }
+-
+-    memset(resp, 0, resp_len);
+-
+-    upm_clock_t clock = upm_clock_init();
+-
+-    size_t idx = 0;
+-
+-    do
+-    {
+-        if (uartat_data_available(dev, 1))
+-        {
+-            int rv = uartat_read(dev, &resp[idx], 1);
+-
+-            if (rv < 0)
+-                return false;
+-
+-            if (dev->filter_cr && resp[idx] == '\r')
+-                continue;
+-
+-            if (idx >= resp_len - 1)
+-            {
+-                // one last check
+-                if (uartat_find(dev, resp, wait_string))
+-                    return true;
+-                else
+-                    return false;
+-            }
+-            idx++;
+-
+-            // see if the string is present
+-            if (uartat_find(dev, resp, wait_string))
+-                return true;
+-        }
+-    } while (upm_elapsed_ms(&clock) < millis);
+-
+-    return false;
+-}
+-
+-void uartat_command(const uartat_context dev, const char *cmd)
+-{
+-    assert(dev != NULL);
+-    assert(cmd != NULL);
+-
+-    uartat_command_with_response(dev, cmd, NULL, 0);
+-}
+-
+-upm_result_t uartat_set_flow_control(const uartat_context dev,
+-                                     UARTAT_FLOW_CONTROL_T fc)
+-{
+-    assert(dev != NULL);
+-
+-    mraa_result_t rv = MRAA_SUCCESS;
+-
+-    switch(fc)
+-    {
+-    case UARTAT_FLOW_CONTROL_NONE:
+-        rv = mraa_uart_set_flowcontrol(dev->uart, false, false);
+-        break;
+-
+-    case UARTAT_FLOW_CONTROL_HARD:
+-        rv = mraa_uart_set_flowcontrol(dev->uart, false, true);
+-        break;
+-
+-    case UARTAT_FLOW_CONTROL_SOFT:
+-        rv = mraa_uart_set_flowcontrol(dev->uart, true, false);
+-        break;
+-
+-    default:
+-        return UPM_ERROR_INVALID_PARAMETER;
+-    }
+-
+-    if (rv == MRAA_SUCCESS)
+-        return UPM_SUCCESS;
+-    else
+-        return UPM_ERROR_OPERATION_FAILED;
+-}
+-
+-bool uartat_find(const uartat_context dev, const char *buffer, const char *str)
+-{
+-    assert(dev != NULL);
+-    assert(buffer != NULL);
+-    assert(str != NULL);
+-
+-    return ((strstr(buffer, str)) ? true : false);
+-}
+-
+-void uartat_filter_cr(const uartat_context dev, bool enable)
+-{
+-    assert(dev != NULL);
+-
+-    dev->filter_cr = enable;
+-}
+diff --git a/src/uartat/uartat.cxx b/src/uartat/uartat.cxx
+deleted file mode 100644
+index 9d4d99c..0000000
+--- a/src/uartat/uartat.cxx
++++ /dev/null
+@@ -1,173 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2017 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#include <iostream>
+-#include <stdexcept>
+-#include <string.h>
+-
+-#include "uartat.hpp"
+-
+-using namespace upm;
+-using namespace std;
+-
+-UARTAT::UARTAT(unsigned int uart, unsigned int baudrate) :
+-    m_uartat(uartat_init(uart, baudrate))
+-{
+-    if (!m_uartat)
+-        throw std::runtime_error(string(__FUNCTION__)
+-                                 + ": uartat_init() failed");
+-}
+-
+-UARTAT::UARTAT(string uart_path, unsigned int baudrate) :
+-    m_uartat(uartat_init_tty(uart_path.c_str(), baudrate))
+-{
+-    if (!m_uartat)
+-        throw std::runtime_error(string(__FUNCTION__)
+-                                 + ": uartat_init_tty() failed");
+-}
+-
+-UARTAT::~UARTAT()
+-{
+-    uartat_close(m_uartat);
+-}
+-
+-std::string UARTAT::readStr(size_t size)
+-{
+-    char buffer[size];
+-
+-    int rv;
+-
+-    if ((rv = uartat_read(m_uartat, buffer, size)) < 0)
+-        throw std::runtime_error(string(__FUNCTION__)
+-                                 + ": uartat_read() failed");
+-
+-    return string(buffer, rv);
+-}
+-
+-int UARTAT::writeStr(std::string buffer)
+-{
+-    int rv;
+-
+-    if ((rv = uartat_write(m_uartat, (char*)buffer.data(),
+-                           buffer.size())) < 0)
+-        throw std::runtime_error(string(__FUNCTION__)
+-                                 + ": uartat_write() failed");
+-
+-    return rv;
+-}
+-
+-void UARTAT::setBaudrate(unsigned int baudrate)
+-{
+-    if (uartat_set_baudrate(m_uartat, baudrate))
+-        throw std::runtime_error(string(__FUNCTION__)
+-                                 + ": uartat_baudrate() failed");
+-}
+-
+-void UARTAT::setResponseWaitTime(unsigned int wait_time)
+-{
+-    uartat_set_response_wait_time(m_uartat, wait_time);
+-}
+-
+-bool UARTAT::dataAvailable(unsigned int millis)
+-{
+-    return uartat_data_available(m_uartat, millis);
+-}
+-
+-bool UARTAT::commandMode(std::string cmd_chars, unsigned int guard_ms)
+-{
+-    return uartat_command_mode(m_uartat, cmd_chars.c_str(), guard_ms);
+-}
+-
+-bool UARTAT::inCommandMode()
+-{
+-    return uartat_in_command_mode(m_uartat);
+-}
+-
+-void UARTAT::drain()
+-{
+-    uartat_drain(m_uartat);
+-    return;
+-}
+-
+-string UARTAT::commandWithResponse(const string cmd, size_t resp_len)
+-{
+-    char buffer[resp_len];
+-
+-    int rv;
+-
+-    if ((rv = uartat_command_with_response(m_uartat, cmd.c_str(), buffer,
+-                                           resp_len)) < 0)
+-        throw std::runtime_error(string(__FUNCTION__)
+-                                 + ": uartat_command_with_response() failed");
+-
+-    return string(buffer, rv);
+-}
+-
+-string UARTAT::commandWaitFor(const std::string cmd, size_t resp_len,
+-                              const std::string waitString,
+-                              unsigned int millis)
+-{
+-    char buffer[resp_len];
+-
+-    if (uartat_command_waitfor(m_uartat, cmd.c_str(), buffer, resp_len,
+-                               waitString.c_str(), millis))
+-        return string(buffer, strlen(buffer));
+-    else
+-        return string("");
+-}
+-
+-void UARTAT::command(const string cmd)
+-{
+-    uartat_command(m_uartat, cmd.c_str());
+-
+-    return;
+-}
+-
+-string UARTAT::stringCR2LF(string str)
+-{
+-  for (size_t i=0; i<str.size(); i++)
+-    if (str[i] == '\r')
+-      str[i] = '\n';
+-
+-  return str;
+-}
+-
+-void UARTAT::setFlowControl(UARTAT_FLOW_CONTROL_T fc)
+-{
+-    if (uartat_set_flow_control(m_uartat, fc))
+-        throw std::runtime_error(string(__FUNCTION__)
+-                                 + ": uartat_set_flow_control() failed");
+-
+-    return;
+-}
+-
+-bool UARTAT::find(const std::string buffer, const std::string str)
+-{
+-    return uartat_find(m_uartat, buffer.c_str(), str.c_str());
+-}
+-
+-void UARTAT::filterCR(bool enable)
+-{
+-    uartat_filter_cr(m_uartat, enable);
+-}
+diff --git a/src/uartat/uartat.h b/src/uartat/uartat.h
+deleted file mode 100644
+index 933814a..0000000
+--- a/src/uartat/uartat.h
++++ /dev/null
+@@ -1,282 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2017 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#pragma once
+-
+-#include <stdint.h>
+-#include <stdlib.h>
+-#include <unistd.h>
+-
+-#include <upm.h>
+-#include <mraa/uart.h>
+-
+-#include "uartat_defs.h"
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-    /**
+-     * @file uartat.h
+-     * @library uartat
+-     * @brief Generic API for AT command based UART devices
+-     *
+-     */
+-
+-    /**
+-     * Device context
+-     */
+-    typedef struct _uartat_context {
+-        mraa_uart_context        uart;
+-
+-        // wait time for reading results after sending a command.  The
+-        // default is 250ms.
+-        unsigned int cmd_resp_wait_ms;
+-
+-        // filter carriage returns (CR) out of responses?
+-        bool filter_cr;
+-    } *uartat_context;
+-
+-    /**
+-     * UARTAT Initializer for generic UART operation using a UART index.
+-     *
+-     * @param uart Specify which uart to use.
+-     * @param baudrate Specify the baudrate to use.
+-     * @return an initialized device context on success, NULL on error.
+-     */
+-    uartat_context uartat_init(unsigned int uart, unsigned int baudrate);
+-
+-    /**
+-     * UARTAT Initializer for generic UART operation using a filesystem
+-     * tty path (eg. /dev/ttyUSB0).
+-     *
+-     * @param uart_tty character string representing a filesystem path to a
+-     * serial tty device.
+-     * @param baudrate Specify the baudrate to use.
+-     * @return an initialized device context on success, NULL on error.
+-     */
+-    uartat_context uartat_init_tty(const char *uart_tty, unsigned int baudrate);
+-
+-    /**
+-     * UARTAT sensor close function
+-     *
+-     * @param dev Device context
+-     */
+-    void uartat_close(uartat_context dev);
+-
+-    /**
+-     * Read character data from the device.
+-     *
+-     * @param dev Device context
+-     * @param buffer The character buffer to read data into.
+-     * @param len The maximum size of the buffer
+-     * @return The number of bytes successfully read, or -1 on error
+-     */
+-    int uartat_read(const uartat_context dev, char *buffer, size_t len);
+-
+-    /**
+-     * Write character data to the device.
+-     *
+-     * @param dev Device context
+-     * @param buffer The character buffer containing data to write.
+-     * @param len The number of bytes to write.
+-     * @return The number of bytes successfully written, or -1 on error.
+-     */
+-    int uartat_write(const uartat_context dev, const char *buffer, size_t len);
+-
+-    /**
+-     * Set the baudrate of the device.
+-     *
+-     * @param dev Device context
+-     * @param baudrate The baud rate to set for the device.
+-     * @return UPM result
+-     */
+-    upm_result_t uartat_set_baudrate(const uartat_context dev,
+-                                     unsigned int baudrate);
+-
+-    /**
+-     * Set the default time, in milliseconds, to wait for data to
+-     * arrive after sending a command.
+-     *
+-     * @param dev Device context
+-     * @param wait_ms The response delay to set, in milliseconds.
+-     */
+-    void uartat_set_response_wait_time(const uartat_context dev,
+-                                       unsigned int wait_ms);
+-
+-    /**
+-     * Determine whether there is data available to be read.  This
+-     * function will wait up to "millis" milliseconds for data to
+-     * become available.
+-     *
+-     * @param dev Device context
+-     * @param millis The number of milliseconds to wait for data to
+-     * become available.
+-     * @return true if data is available to be read, false otherwise.
+-     */
+-    bool uartat_data_available(const uartat_context dev,
+-                               unsigned int millis);
+-
+-    /**
+-     * Place the device in AT command mode.  Many devices operate in a
+-     * transparent mode and an AT command mode.  Command mode is
+-     * required to issue AT based commands.  When in transparent mode,
+-     * the device will usually listen for a special sequence of
+-     * characters and delays, indicating that AT command mode should
+-     * be entered.
+-     *
+-     * On most devices, the sequence is:
+-     * <wait 1 second>+++<wait 1 second>
+-     *
+-     * For most devices, the wait time is 1 second (1000 ms) and the
+-     * character sequence is "+++".  These options can often be
+-     * configured on the device.
+-     *
+-     * This function will wait millis milliseconds, write the command
+-     * characters (typically "+++"), then wait millis milliseconds again.
+-     * At this time a read will be attempted, looking for the "OK"
+-     * response indicating command mode was successfully entered.
+-     *
+-     * @param dev Device context
+-     * @param cmd_chars The character sequence to write, typically "+++".
+-     * @param guard_ms The number of milliseconds to delay before and
+-     * after the cmd_chars are written.
+-     * @return true if AT command mode ("OK" detected) was
+-     * successfully entered, false otherwise.
+-     */
+-    bool uartat_command_mode(const uartat_context dev, const char *cmd_chars,
+-                             unsigned int guard_ms);
+-
+-    /**
+-     * Check to see if the device is in command mode.  This is
+-     * accomplished by sending an "AT\r" command and seeing if "OK" or
+-     * "0" is returned.
+-     *
+-     * @param dev Device context
+-     * @return true if AT command mode was detected, false otherwise.
+-     */
+-    bool uartat_in_command_mode(const uartat_context dev);
+-
+-    /**
+-     * Read and throw away any data currently available to be read.
+-     * This is useful to avoid reading data that might have been the
+-     * result of a previous command interfering with data you
+-     * currently want to read.  This function is automatically called
+-     * by uartat_command_with_response(), uartat_command(), and
+-     * uartat_command_waitfor() prior to writing the requested command
+-     * to the device.
+-     *
+-     * @param dev Device context
+-     */
+-    void uartat_drain(const uartat_context dev);
+-
+-    /**
+-     * Send an AT command and optionally return a response.
+-     *
+-     * @param dev Device context
+-     * @param cmd A character string containing the AT command to
+-     * send, including the "AT" prefix and a terminating carriage
+-     * return ("\r").
+-     * @param resp A pointer to a buffer that will contain the
+-     * response.  If NULL is specified, the response is ignored.  The
+-     * returned string buffer will be 0 terminated like any ordinary C
+-     * string.
+-     * @param resp_len The length of the supplied response buffer.  If
+-     * 0, then any response will be ignored.  No more than resp_len
+-     * characters (including the trailing 0 byte) will be returned.
+-     * @return The number of bytes read, or -1 on error.
+-     */
+-    int uartat_command_with_response(const uartat_context dev,
+-                                     const char *cmd, char *resp,
+-                                     size_t resp_len);
+-
+-    /**
+-     * Send an AT command and ignore any response.  This is a
+-     * shorthand version of uartat_command_with_response(), and is
+-     * equivalent to calling uartat_command_with_response(dev, cmd,
+-     * NULL, 0).
+-     *
+-     * @param dev Device context
+-     * @param cmd The AT command to send, including the "AT" prefix
+-     * and a terminating carriage return ("\r").
+-     */
+-    void uartat_command(const uartat_context dev, const char *cmd);
+-
+-    /**
+-     * Read characters for up to millis milliseconds, returning
+-     * as soon as the wait_string is found.
+-     *
+-     * @param dev Device context
+-     * @param cmd The command to send
+-     * @param resp The response character buffer
+-     * @param resp_len The maximum size of the response buffer
+-     * @param wait_string The string to search for
+-     * @param millis The maximum number of milliseconds to look for
+-     * the wait_string.
+-     * @return true if the wait_string was found in the response,
+-     * false otherwise.
+-     */
+-    bool uartat_command_waitfor(const uartat_context dev, const char *cmd,
+-                                char *resp, size_t resp_len,
+-                                const char *wait_string,
+-                                unsigned int millis);
+-
+-    /**
+-     * Set a flow control method for the UART.  By default, during
+-     * initialization, flow control is disabled.
+-     *
+-     * @param dev Device context
+-     * @param fc One of the UARTAT_FLOW_CONTROL_T values.
+-     * @return the UPM result.
+-     */
+-    upm_result_t uartat_set_flow_control(const uartat_context dev,
+-                                         UARTAT_FLOW_CONTROL_T fc);
+-
+-    /**
+-     * Look for a string in a buffer.  This is a utility function that
+-     * can be used to indicate if a given string is present in a
+-     * supplied buffer.  The search is case sensitive.
+-     *
+-     * @param dev Device context
+-     * @param buffer The 0 teminated buffer in which to search.
+-     * @param str The 0 teminated string to search for.
+-     * @return true if the string was found, false otherwise.
+-     */
+-    bool uartat_find(const uartat_context dev, const char *buffer,
+-                     const char *str);
+-
+-    /**
+-     * Filter out carriage returns (CR) from response buffers if
+-     * enabled.  This operates only on the response buffers returned
+-     * from uartat_command_with_response(), uartat_command(), and
+-     * uartat_command_waitfor().
+-     *
+-     * @param dev Device context
+-     * @param enable true to filter out CR's, false otherwise
+-     */
+-    void uartat_filter_cr(const uartat_context dev, bool enable);
+-
+-#ifdef __cplusplus
+-}
+-#endif
+diff --git a/src/uartat/uartat.hpp b/src/uartat/uartat.hpp
+deleted file mode 100644
+index 5e8180d..0000000
+--- a/src/uartat/uartat.hpp
++++ /dev/null
+@@ -1,265 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2017 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-#pragma once
+-
+-#include <string>
+-#include <iostream>
+-
+-#include "uartat.h"
+-
+-namespace upm {
+-    /**
+-     * @brief Generic AT Command Based UART Modem Library
+-     * @defgroup uartat libupm-uartat
+-     * @ingroup uart
+-     */
+-
+-    /**
+-     * @library uartat
+-     * @sensor uartat
+-     * @comname Generic AT Command Based UART Device
+-     * @type other
+-     * @con uart
+-     *
+-     * @brief API for a Generic AT command based UART device
+-     *
+-     * This is a generic UART device driver for accessing UART based
+-     * devices that utilize an "AT" command set.  Typically these
+-     * devices are Radios, Modems, and similar devices that are
+-     * configured and controlled by emitting "AT" commands.
+-     *
+-     * @snippet uartat-le910.cxx Interesting
+-     */
+-
+-    class UARTAT {
+-    public:
+-
+-        /**
+-         * UARTAT object constructor for a UART specified by MRAA number.
+-         *
+-         * @param uart Specify which uart to use.
+-         * @param baudrate Specify the baudrate to use.
+-         */
+-        UARTAT(unsigned int uart, unsigned int baudrate);
+-
+-        /**
+-         * UARTAT object constructor for a UART specified by PATH (ex:
+-         * /dev/ttyUSB0)
+-         *
+-         * @param uart_path Specify path of UART device.
+-         * @param baudrate Specify the baudrate to use.
+-         */
+-        UARTAT(std::string uart_path, unsigned int baudrate);
+-
+-        /**
+-         * UARTAT object destructor
+-         */
+-        ~UARTAT();
+-
+-        /**
+-         * Read character data from the device.
+-         *
+-         * @param size The maximum number of characters to read.
+-         * @return string containing the data read.
+-         */
+-        std::string readStr(size_t size);
+-
+-        /**
+-         * Write character data to the device.
+-         *
+-         * @param buffer The string containing the data to write.
+-         * @return The number of bytes written.
+-         */
+-        int writeStr(std::string buffer);
+-
+-        /**
+-         * Set the baudrate of the device.
+-         *
+-         * @param baudrate The baud rate to set for the device.
+-         */
+-        void setBaudrate(unsigned int baudrate);
+-
+-        /**
+-         * Set the default time, in milliseconds, to wait for data to
+-         * arrive after sending a command.
+-         *
+-         * @param wait_time The response delay to set, in milliseconds.
+-         */
+-        void setResponseWaitTime(unsigned int wait_time);
+-
+-        /**
+-         * Determine whether there is data available to be read.  In the
+-         * case of a UART, this function will wait up to "millis"
+-         * milliseconds for data to become available.  In the case of an I2C
+-         * device, the millis argument is ignored and the function will
+-         * return immediately, indicating whether data is available.
+-         *
+-         * @param millis The number of milliseconds to wait for data to
+-         * become available.
+-         * @return true if data is available to be read, false otherwise.
+-         */
+-        bool dataAvailable(unsigned int millis);
+-
+-        /**
+-         * Place the device in AT command mode.  Many devices operate in a
+-         * transparent mode and an AT command mode.  Command mode is
+-         * required to issue AT based commands.  When in transparent mode,
+-         * the device will usually listen for a special sequence of
+-         * characters and delays, indicating that AT command mode should
+-         * be entered.
+-         *
+-         * On most devices, the sequence is:
+-         * <wait 1 second>+++<wait 1 second>
+-         *
+-         * For most devices, the wait time is 1 second (1000 ms) and the
+-         * character sequence is "+++".  These options can often be
+-         * configured on the device.
+-         *
+-         * This function will wait millis milliseconds, write the command
+-         * characters (typically "+++"), then wait millis milliseconds again.
+-         * At this time a read will be attempted, looking for the "OK"
+-         * response indicating command mode was successfully entered.
+-         *
+-         * @param cmd_chars The character sequence to write, typically "+++".
+-         * @param guard_ms The number of milliseconds to delay before and
+-         * after the cmd_chars are written.
+-         * @return true if AT command mode ("OK" detected) was
+-         * successfully entered, false otherwise.
+-         */
+-        bool commandMode(const std::string cmd_chars, unsigned int guard_ms);
+-
+-        /**
+-         * Check to see if the device is in command mode.  This is
+-         * accomplished by sending an "AT\r" command and seeing if
+-         * "OK" or "0" is returned.
+-         *
+-         * @return true if AT command mode was detected, false otherwise.
+-         */
+-        bool inCommandMode();
+-
+-        /**
+-         * Read and throw away any data currently available to be
+-         * read.  This is useful to avoid reading data that might have
+-         * been the result of a previous command interfering with data
+-         * you currently want to read.  This function is automatically
+-         * called by commandWithResponse(), command(), and
+-         * commandWaitfor() prior to writing the requested command to
+-         * the device.
+-         *
+-         */
+-        void drain();
+-
+-        /**
+-         * Send an AT command and optionally return a response.
+-         *
+-         * @param cmd A character string containing the AT command to
+-         * send, including the "AT" prefix and a terminating carriage
+-         * return ("\r").
+-         * @param resp_len The maximum number of characters to read from the
+-         * device.
+-         * @return The device response string, if any.
+-         */
+-        std::string commandWithResponse(const std::string cmd, size_t resp_len);
+-
+-        /**
+-         * Send an AT command and return a response, while waiting for
+-         * a specific string.  If the string isn't found the returned
+-         * string will be empty.  If the string is found, the function
+-         * will return immediately.
+-         *
+-         * @param cmd A character string containing the AT command to
+-         * send, including the "AT" prefix and a terminating carriage
+-         * return ("\r").
+-         * @param resp_len The maximum number of characters to read from the
+-         * device.
+-         * @param waitString The string to look for.  If found, the
+-         * response will be returned immediately regardless of the
+-         * timeout setting.
+-         * @param millis The maximum number of milliseconds to wait
+-         * for the string.
+-         * @return A string containing the response if the search
+-         * string was found, otherwise and empty string is returned.
+-         */
+-        std::string commandWaitFor(const std::string cmd, size_t resp_len,
+-                                   const std::string waitString,
+-                                   unsigned int millis);
+-
+-        /**
+-         * Send an AT command and ignore any response.
+-         *
+-         * @param cmd The AT command to send, including the "AT" prefix
+-         * and a terminating carriage return ("\r").
+-         */
+-        void command(const std::string cmd);
+-
+-        /**
+-         * This is a convenience method that converts each CR (\r) in a
+-         * string to a LF (\n) and returns it.  This is useful for
+-         * outputting the response to an AT command for instance, which is
+-         * often CR terminated.
+-         *
+-         * @param str The string to convert
+-         * @return The converted string
+-         */
+-        std::string stringCR2LF(std::string str);
+-
+-        /**
+-         * Set a flow control method for the UART.  By default, during
+-         * initialization, flow control is disabled.
+-         *
+-         * @param fc One of the UARTAT_FLOW_CONTROL_T values.
+-         */
+-        void setFlowControl(UARTAT_FLOW_CONTROL_T fc);
+-
+-        /**
+-         * Look for a string in a buffer.  This is a utility function that
+-         * can be used to indicate if a given string is present in a
+-         * supplied buffer.  The search is case sensitive.
+-         *
+-         * @param buffer The string buffer in which to search.
+-         * @param str The string to search for.
+-         * @return true if the string was found, false otherwise.
+-         */
+-        bool find(const std::string buffer, const std::string str);
+-
+-        /**
+-         * Filter out carriage returns (CR) from response buffers if
+-         * enabled.  This operates only on the response buffers returned
+-         * from commandWithResponse(), command(), and
+-         * commandWaitfor().
+-         *
+-         * @param enable true to filter out CR's, false otherwise
+-         */
+-        void filterCR(bool enable);
+-
+-    protected:
+-        // uartat device context
+-        uartat_context m_uartat;
+-
+-    private:
+-        /* Disable implicit copy and assignment operators */
+-        UARTAT(const UARTAT&) = delete;
+-        UARTAT &operator=(const UARTAT&) = delete;
+-    };
+-}
+diff --git a/src/uartat/uartat.i b/src/uartat/uartat.i
+deleted file mode 100644
+index 68eb424..0000000
+--- a/src/uartat/uartat.i
++++ /dev/null
+@@ -1,16 +0,0 @@
+-%include "../common_top.i"
+-
+-/* BEGIN Java syntax  ------------------------------------------------------- */
+-#ifdef SWIGJAVA
+-JAVA_JNI_LOADLIBRARY(javaupm_uartat)
+-#endif
+-/* END Java syntax */
+-
+-/* BEGIN Common SWIG syntax ------------------------------------------------- */
+-%{
+-#include "uartat_defs.h"
+-#include "uartat.hpp"
+-%}
+-%include "uartat_defs.h"
+-%include "uartat.hpp"
+-/* END Common SWIG syntax */
+diff --git a/src/uartat/uartat.json b/src/uartat/uartat.json
+deleted file mode 100644
+index 7483f50..0000000
+--- a/src/uartat/uartat.json
++++ /dev/null
+@@ -1,25 +0,0 @@
+-{
+-    "Library": "uartat",
+-    "Description": "Generic AT Command Based UART Device Library",
+-    "Sensor Class": {
+-        "UARTAT": {
+-            "Name": "API for a Generic AT command based UART device",
+-            "Description": "This is the UPM Module for a Generic AT command based UART device. This is a generic UART device driver for accessing UART based devices that utilize an \"AT\" command set.  Typically these devices are Radios, Modems, and similar devices that are configured and controlled by emitting \"AT\" commands.",
+-            "Aliases": ["uartat"],
+-            "Categories": ["other"],
+-            "Connections": ["uart"],
+-            "Project Type": ["other"],
+-            "Manufacturers": ["generic"],
+-            "Examples": {
+-                "Java": ["LE910_Example.java"],
+-                "Python": ["le910.py"],
+-                "Node.js": ["le910.js"],
+-                "C++": ["uartat-le910.cxx"],
+-                "C": ["uartat-le910.c"]
+-            },
+-            "Urls": {
+-                "Product Pages": ["https://github.com/intel-iot-devkit/upm/tree/master/src/uartat"]
+-            }
+-        }
+-    }
+-}
+diff --git a/src/uartat/uartat_defs.h b/src/uartat/uartat_defs.h
+deleted file mode 100644
+index 1d3932f..0000000
+--- a/src/uartat/uartat_defs.h
++++ /dev/null
+@@ -1,54 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2017 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#pragma once
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-    // possible flow control methods
+-    typedef enum {
+-        UARTAT_FLOW_CONTROL_NONE           = 0,
+-        UARTAT_FLOW_CONTROL_HARD,          // hardware flow control
+-        UARTAT_FLOW_CONTROL_SOFT           // software flow control
+-    } UARTAT_FLOW_CONTROL_T;
+-
+-
+-    // Numeric response codes via ITU-T V25Ter recommendations
+-    typedef enum {
+-        UARTAT_RESPONSE_CODE_OK            = 0,
+-        UARTAT_RESPONSE_CODE_CONNECT       = 1,
+-        UARTAT_RESPONSE_CODE_RING          = 2,
+-        UARTAT_RESPONSE_CODE_NO_CARRIER    = 3,
+-        UARTAT_RESPONSE_CODE_ERROR         = 4,
+-        // 5 unassigned
+-        UARTAT_RESPONSE_CODE_NO_DIALTONE   = 6,
+-        UARTAT_RESPONSE_CODE_BUSY          = 7,
+-        UARTAT_RESPONSE_CODE_NO_ANSWER     = 8
+-    } UARTAT_RESPONSE_CODE_T;
+-
+-#ifdef __cplusplus
+-}
+-#endif
+diff --git a/src/uln200xa/CMakeLists.txt b/src/uln200xa/CMakeLists.txt
+deleted file mode 100644
+index ca30d86..0000000
+--- a/src/uln200xa/CMakeLists.txt
++++ /dev/null
+@@ -1,8 +0,0 @@
+-upm_mixed_module_init (NAME uln200xa
+-    DESCRIPTION "Darlington Stepper Driver"
+-    C_HDR uln200xa.h uln200xa_defs.h
+-    C_SRC uln200xa.c
+-    CPP_HDR uln200xa.hpp
+-    CPP_SRC uln200xa.cxx
+-    CPP_WRAPS_C
+-    REQUIRES mraa utilities-c)
+diff --git a/src/uln200xa/uln200xa.c b/src/uln200xa/uln200xa.c
+deleted file mode 100644
+index a2b56b6..0000000
+--- a/src/uln200xa/uln200xa.c
++++ /dev/null
+@@ -1,260 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2016 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-
+-#include <assert.h>
+-#include <upm_utilities.h>
+-
+-#include "uln200xa.h"
+-
+-static void uln200xa_stepper_step(const uln200xa_context dev);
+-
+-uln200xa_context uln200xa_init(int stepsPerRev, unsigned int i1,
+-                               unsigned int i2, unsigned int i3,
+-                               unsigned int i4)
+-{
+-    uln200xa_context dev =
+-        (uln200xa_context)malloc(sizeof(struct _uln200xa_context));
+-
+-    if (!dev)
+-        return NULL;
+-
+-    dev->stepI1 = NULL;
+-    dev->stepI2 = NULL;
+-    dev->stepI3 = NULL;
+-    dev->stepI4 = NULL;
+-
+-    dev->stepsPerRev = stepsPerRev;
+-    dev->currentStep = 0;
+-    dev->stepDelay = 0;
+-    dev->stepDirection = 1;          // default is forward
+-
+-    // make sure MRAA is initialized
+-    int mraa_rv;
+-    if ((mraa_rv = mraa_init()) != MRAA_SUCCESS)
+-    {
+-        printf("%s: mraa_init() failed (%d).\n", __FUNCTION__, mraa_rv);
+-        uln200xa_close(dev);
+-        return NULL;
+-    }
+-
+-    // MRAA contexts...
+-    if ( !(dev->stepI1 = mraa_gpio_init(i1)) )
+-    {
+-        printf("%s: mraa_gpio_init(i1) failed\n",
+-               __FUNCTION__);
+-        uln200xa_close(dev);
+-        return NULL;
+-    }
+-    mraa_gpio_dir(dev->stepI1, MRAA_GPIO_OUT);
+-
+-    if ( !(dev->stepI2 = mraa_gpio_init(i2)) )
+-    {
+-        printf("%s: mraa_gpio_init(i2) failed\n",
+-               __FUNCTION__);
+-        uln200xa_close(dev);
+-        return NULL;
+-    }
+-    mraa_gpio_dir(dev->stepI2, MRAA_GPIO_OUT);
+-
+-    if ( !(dev->stepI3 = mraa_gpio_init(i3)) )
+-    {
+-        printf("%s: mraa_gpio_init(i3) failed\n",
+-               __FUNCTION__);
+-        uln200xa_close(dev);
+-        return NULL;
+-    }
+-    mraa_gpio_dir(dev->stepI3, MRAA_GPIO_OUT);
+-
+-    if ( !(dev->stepI4 = mraa_gpio_init(i4)) )
+-    {
+-        printf("%s: mraa_gpio_init(i4) failed\n",
+-               __FUNCTION__);
+-        uln200xa_close(dev);
+-        return NULL;
+-    }
+-    mraa_gpio_dir(dev->stepI4, MRAA_GPIO_OUT);
+-
+-    // set default speed to 1
+-    uln200xa_set_speed(dev, 1);
+-
+-    return dev;
+-}
+-
+-void uln200xa_close(uln200xa_context dev)
+-{
+-    assert(dev != NULL);
+-
+-    uln200xa_release(dev);
+-    if (dev->stepI1)
+-        mraa_gpio_close(dev->stepI1);
+-    if (dev->stepI2)
+-        mraa_gpio_close(dev->stepI2);
+-    if (dev->stepI3)
+-        mraa_gpio_close(dev->stepI3);
+-    if (dev->stepI4)
+-        mraa_gpio_close(dev->stepI4);
+-
+-    free(dev);
+-}
+-
+-void uln200xa_set_speed(const uln200xa_context dev, unsigned int speed)
+-{
+-    assert(dev != NULL);
+-
+-    dev->stepDelay = 60 * 1000 / dev->stepsPerRev / speed;
+-}
+-
+-void uln200xa_set_direction(const uln200xa_context dev,
+-                            ULN200XA_DIRECTION_T dir)
+-{
+-    assert(dev != NULL);
+-
+-    switch (dir)
+-    {
+-    case ULN200XA_DIR_CW:
+-        dev->stepDirection = 1;
+-        break;
+-    case ULN200XA_DIR_CCW:
+-        dev->stepDirection = -1;
+-        break;
+-    }
+-}
+-
+-static void uln200xa_stepper_step(const uln200xa_context dev)
+-{
+-    assert(dev != NULL);
+-
+-    int step = dev->currentStep % 8;
+-
+-    // This motor requires a different sequencing order in 8-steps than
+-    // usual.
+-
+-    //   Step I0 I1 I2 I3
+-    //     1  0  0  0  1
+-    //     2  0  0  1  1
+-    //     3  0  0  1  0
+-    //     4  0  1  1  0
+-    //     5  0  1  0  0
+-    //     6  1  1  0  0
+-    //     7  1  0  0  0
+-    //     8  1  0  0  1
+-
+-    switch (step)
+-    {
+-    case 0:    // 0001
+-        mraa_gpio_write(dev->stepI1, 0);
+-        mraa_gpio_write(dev->stepI2, 0);
+-        mraa_gpio_write(dev->stepI3, 0);
+-        mraa_gpio_write(dev->stepI4, 1);
+-        break;
+-    case 1:    // 0011
+-        mraa_gpio_write(dev->stepI1, 0);
+-        mraa_gpio_write(dev->stepI2, 0);
+-        mraa_gpio_write(dev->stepI3, 1);
+-        mraa_gpio_write(dev->stepI4, 1);
+-        break;
+-    case 2:    // 0010
+-        mraa_gpio_write(dev->stepI1, 0);
+-        mraa_gpio_write(dev->stepI2, 0);
+-        mraa_gpio_write(dev->stepI3, 1);
+-        mraa_gpio_write(dev->stepI4, 0);
+-        break;
+-    case 3:    // 0110
+-        mraa_gpio_write(dev->stepI1, 0);
+-        mraa_gpio_write(dev->stepI2, 1);
+-        mraa_gpio_write(dev->stepI3, 1);
+-        mraa_gpio_write(dev->stepI4, 0);
+-        break;
+-    case 4:    // 0100
+-        mraa_gpio_write(dev->stepI1, 0);
+-        mraa_gpio_write(dev->stepI2, 1);
+-        mraa_gpio_write(dev->stepI3, 0);
+-        mraa_gpio_write(dev->stepI4, 0);
+-        break;
+-    case 5:    // 1100
+-        mraa_gpio_write(dev->stepI1, 1);
+-        mraa_gpio_write(dev->stepI2, 1);
+-        mraa_gpio_write(dev->stepI3, 0);
+-        mraa_gpio_write(dev->stepI4, 0);
+-        break;
+-    case 6:    // 1000
+-        mraa_gpio_write(dev->stepI1, 1);
+-        mraa_gpio_write(dev->stepI2, 0);
+-        mraa_gpio_write(dev->stepI3, 0);
+-        mraa_gpio_write(dev->stepI4, 0);
+-        break;
+-    case 7:    // 1001
+-        mraa_gpio_write(dev->stepI1, 1);
+-        mraa_gpio_write(dev->stepI2, 0);
+-        mraa_gpio_write(dev->stepI3, 0);
+-        mraa_gpio_write(dev->stepI4, 1);
+-        break;
+-    default:
+-        // can't happen
+-        break;
+-    }
+-}
+-
+-void uln200xa_stepper_steps(const uln200xa_context dev, unsigned int steps)
+-{
+-    assert(dev != NULL);
+-
+-    while (steps > 0)
+-    {
+-        upm_delay_ms(dev->stepDelay);
+-        dev->currentStep += dev->stepDirection;
+-
+-        if (dev->stepDirection == 1)
+-        {
+-            if (dev->currentStep >= dev->stepsPerRev)
+-                dev->currentStep = 0;
+-        }
+-        else
+-        {
+-            if (dev->currentStep <= 0)
+-                dev->currentStep = dev->stepsPerRev;
+-        }
+-
+-        steps--;
+-        uln200xa_stepper_step(dev);
+-    }
+-}
+-
+-void uln200xa_release(const uln200xa_context dev)
+-{
+-    assert(dev !=NULL);
+-
+-    // we do these check since this is also called from
+-    // uln200xa_close() and we can't be sure that all of the contexts
+-    // have been created yet.
+-    if (dev->stepI1)
+-        mraa_gpio_write(dev->stepI1, 0);
+-    if (dev->stepI2)
+-        mraa_gpio_write(dev->stepI2, 0);
+-    if (dev->stepI3)
+-        mraa_gpio_write(dev->stepI3, 0);
+-    if (dev->stepI4)
+-        mraa_gpio_write(dev->stepI4, 0);
+-}
+diff --git a/src/uln200xa/uln200xa.cxx b/src/uln200xa/uln200xa.cxx
+deleted file mode 100644
+index 5fe6ebe..0000000
+--- a/src/uln200xa/uln200xa.cxx
++++ /dev/null
+@@ -1,66 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2015-2016 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#include <iostream>
+-#include <string>
+-#include <stdexcept>
+-
+-#include "uln200xa.hpp"
+-
+-using namespace upm;
+-using namespace std;
+-
+-ULN200XA::ULN200XA(int stepsPerRev, unsigned int i1, unsigned int i2,
+-                   unsigned int i3, unsigned int i4) :
+-    m_uln200xa(uln200xa_init(stepsPerRev, i1, i2, i3, i4))
+-{
+-    if (!m_uln200xa)
+-        throw std::runtime_error(std::string(__FUNCTION__) +
+-                                 ": uln200xa_init() failed");
+-}
+-
+-ULN200XA::~ULN200XA()
+-{
+-    uln200xa_close(m_uln200xa);
+-}
+-
+-void ULN200XA::setSpeed(unsigned int speed)
+-{
+-    uln200xa_set_speed(m_uln200xa, speed);
+-}
+-
+-void ULN200XA::setDirection(ULN200XA_DIRECTION_T dir)
+-{
+-    uln200xa_set_direction(m_uln200xa, dir);
+-}
+-
+-void ULN200XA::stepperSteps(unsigned int steps)
+-{
+-    uln200xa_stepper_steps(m_uln200xa, steps);
+-}
+-
+-void ULN200XA::release()
+-{
+-    uln200xa_release(m_uln200xa);
+-}
+diff --git a/src/uln200xa/uln200xa.h b/src/uln200xa/uln200xa.h
+deleted file mode 100644
+index c0385fe..0000000
+--- a/src/uln200xa/uln200xa.h
++++ /dev/null
+@@ -1,116 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2016 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-#pragma once
+-
+-#include <stdlib.h>
+-#include <stdio.h>
+-#include <upm.h>
+-
+-#include <mraa/gpio.h>
+-
+-#include "uln200xa_defs.h"
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-
+-    /**
+-     * @file uln200xa.h
+-     * @library uln200xa
+-     * @brief C API for the uln200xa driver
+-     *
+-     * @include uln200xa.c
+-     */
+-
+-    /**
+-     * Device context
+-     */
+-    typedef struct _uln200xa_context {
+-        mraa_gpio_context stepI1; // In1
+-        mraa_gpio_context stepI2;
+-        mraa_gpio_context stepI3;
+-        mraa_gpio_context stepI4;
+-
+-        int      stepsPerRev;
+-        int      currentStep;
+-        uint32_t stepDelay;
+-        int      stepDirection;
+-
+-    } *uln200xa_context;
+-
+-    /**
+-     * ULN200XA constructor
+-     *
+-     * @param stepsPerRev Number of steps per full revolution
+-     * @param i1 Digital pin to use for stepper input 1
+-     * @param i2 Digital pin to use for stepper input 2
+-     * @param i3 Digital pin to use for stepper input 3
+-     * @param i4 Digital pin to use for stepper input 4
+-     * @return Device context
+-     */
+-    uln200xa_context uln200xa_init(int stepsPerRev, unsigned int i1,
+-                                   unsigned int i2, unsigned int i3,
+-                                   unsigned int i4);
+-
+-    /**
+-     * ULN200XA destructor
+-     */
+-    void uln200xa_close(uln200xa_context dev);
+-
+-    /**
+-     * Sets the speed of the stepper motor in revolutions per minute (RPM)
+-     *
+-     * @param dev Device context
+-     * @param speed Speed to set the motor to, in RPM
+-     */
+-    void uln200xa_set_speed(const uln200xa_context dev, unsigned int speed);
+-
+-    /**
+-     * Sets the direction of the motor, clockwise or counterclockwise
+-     *
+-     * @param dev Device context
+-     * @param dir Direction to set the motor to
+-     */
+-    void uln200xa_set_direction(const uln200xa_context dev,
+-                                ULN200XA_DIRECTION_T dir);
+-
+-    /**
+-     * Steps the stepper motor a specified number of steps
+-     *
+-     * @param dev Device context
+-     * @param steps Number of steps to move the stepper motor
+-     */
+-    void uln200xa_stepper_steps(const uln200xa_context dev, unsigned int steps);
+-
+-    /**
+-     * Releases the stepper motor by removing power
+-     *
+-     * @param dev Device context
+-     */
+-    void uln200xa_release(const uln200xa_context dev);
+-
+-#ifdef __cplusplus
+-}
+-#endif
+diff --git a/src/uln200xa/uln200xa.hpp b/src/uln200xa/uln200xa.hpp
+deleted file mode 100644
+index ec652a6..0000000
+--- a/src/uln200xa/uln200xa.hpp
++++ /dev/null
+@@ -1,116 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2015-2016 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-#pragma once
+-
+-#include <uln200xa.h>
+-
+-namespace upm {
+-
+-  /**
+-   * @brief ULN200XA Stepper Driver
+-   * @defgroup uln200xa libupm-uln200xa
+-   * @ingroup seeed gpio motor
+-   */
+-
+-  /**
+-   * @library uln200xa
+-   * @sensor uln200xa
+-   * @comname Darlington Stepper Driver
+-   * @altname ULN2001A ULN2002A ULN2003A ULN2004A
+-   * @type motor
+-   * @man seeed
+-   * @web http://www.seeedstudio.com/depot/Gear-Stepper-Motor-with-Driver-p-1685.html?cPath=39_40
+-   * @con gpio
+-   *
+-   * @brief UPM module for the ULN200XA Darlington Stepper Driver
+-   *
+-   * This module was developed on a ULN2003A Stepper Driver. It
+-   * should also support the ULN2001A, ULN2002A, and ULN2004A devices, when
+-   * using to drive the 28BYJ-48 unipolar stepper motor.
+-   *
+-   * Vcc goes to the 5V pin on your development board and the Vm pin should
+-   * be connected to an external 5V supply.
+-   *
+-   * @image html uln200xa.jpg
+-   * Example driving a stepper motor
+-   * @snippet uln200xa.cxx Interesting
+-   */
+-
+-
+-  class ULN200XA {
+-  public:
+-
+-    /**
+-     * ULN200XA constructor
+-     *
+-     * @param stepsPerRev Number of steps per full revolution
+-     * @param i1 Digital pin to use for stepper input 1
+-     * @param i2 Digital pin to use for stepper input 2
+-     * @param i3 Digital pin to use for stepper input 3
+-     * @param i4 Digital pin to use for stepper input 4
+-     */
+-    ULN200XA(int stepsPerRev, unsigned int i1, unsigned int i2,
+-             unsigned int i3, unsigned int i4);
+-
+-    /**
+-     * ULN200XA destructor
+-     */
+-    ~ULN200XA();
+-
+-    /**
+-     * Sets the speed of the stepper motor in revolutions per minute (RPM)
+-     *
+-     * @param speed Speed to set the motor to, in RPM
+-     */
+-    void setSpeed(unsigned int speed);
+-
+-    /**
+-     * Sets the direction of the motor, clockwise or counterclockwise
+-     *
+-     * @param dir Direction to set the motor to
+-     */
+-    void setDirection(ULN200XA_DIRECTION_T dir);
+-
+-    /**
+-     * Steps the stepper motor a specified number of steps
+-     *
+-     * @param steps Number of steps to move the stepper motor
+-     */
+-    void stepperSteps(unsigned int steps);
+-
+-    /**
+-     * Releases the stepper motor by removing power
+-     *
+-     */
+-    void release();
+-
+-  protected:
+-    uln200xa_context m_uln200xa;
+-
+-  private:
+-    /* Disable implicit copy and assignment operators */
+-    ULN200XA(const ULN200XA&) = delete;
+-    ULN200XA &operator=(const ULN200XA&) = delete;
+-  };
+-}
+diff --git a/src/uln200xa/uln200xa.i b/src/uln200xa/uln200xa.i
+deleted file mode 100644
+index 4655373..0000000
+--- a/src/uln200xa/uln200xa.i
++++ /dev/null
+@@ -1,15 +0,0 @@
+-%include "../common_top.i"
+-
+-/* BEGIN Java syntax  ------------------------------------------------------- */
+-#ifdef SWIGJAVA
+-JAVA_JNI_LOADLIBRARY(javaupm_uln200xa)
+-#endif
+-/* END Java syntax */
+-
+-/* BEGIN Common SWIG syntax ------------------------------------------------- */
+-%{
+-#include "uln200xa.hpp"
+-%}
+-%include "uln200xa_defs.h"
+-%include "uln200xa.hpp"
+-/* END Common SWIG syntax */
+diff --git a/src/uln200xa/uln200xa.json b/src/uln200xa/uln200xa.json
+deleted file mode 100644
+index 5ec3926..0000000
+--- a/src/uln200xa/uln200xa.json
++++ /dev/null
+@@ -1,53 +0,0 @@
+-{
+-    "Library": "uln200xa",
+-    "Description": "ULN200XA Stepper Driver Library",
+-    "Sensor Class": {
+-        "ULN200XA": {
+-            "Name": "UPM module for the ULN200XA Darlington Stepper Driver",
+-            "Description": "This is the UPM Module for the ULN200XA Darlington Stepper Driver. This module was developed on a ULN2003A Stepper Driver. It should also support the ULN2001A, ULN2002A, and ULN2004A devices, when using to drive the 28BYJ-48 unipolar stepper motor.",
+-            "Aliases": ["ULN200XA", "ULN2001A", "ULN2002A", "ULN2003A", "ULN2004A"],
+-            "Categories": ["motor"],
+-            "Connections": ["gpio"],
+-            "Project Type": ["prototyping", "robotics"],
+-            "Manufacturers": ["Seeed"],
+-            "Image": "uln200xa.jpg",
+-            "Examples": {
+-                "Java": ["ULN200XA_Example.java"],
+-                "Python": ["uln200xa.py"],
+-                "Node.js": ["uln200xa.js"],
+-                "C++": ["uln200xa.cxx"],
+-                "C": ["uln200xa.c"]
+-            },
+-            "Specifications": {
+-                "Vsource": {
+-                    "unit": "V",
+-                    "min": 2.4,
+-                    "max": 13.0
+-                },
+-                "Supply Current": {
+-                    "unit": "uA",
+-                    "min" : 500,
+-                    "max" : 1450
+-                },
+-                "Operating Temperature": {
+-                    "unit": "°C",
+-                    "min": -20,
+-                    "max": 85
+-                }
+-            },
+-            "Platforms": {
+-                "Intel Edison": {
+-                    "Notes": ["Might need Grove base shield"]
+-                },
+-                "Arduino 101": {
+-                    "Notes": ["Might need Grove base shield"]
+-                }
+-            },
+-            "Urls": {
+-                "Product Pages": ["https://www.seeedstudio.com/Gear-Stepper-Motor-with-Driver-p-1685.html?cPath=39_40"],
+-                "Datasheets": ["http://www.seeedstudio.com/document/pdf/Stepper%20Motor%20Datasheet.pdf", "http://www.seeedstudio.com/document/pdf/ULN2003%20Datasheet.pdf"],
+-                "Schematics": ["http://www.seeedstudio.com/document/pdf/Driver%20Board%20Schematic.pdf"]
+-            }
+-        }
+-    }
+-}
+diff --git a/src/uln200xa/uln200xa_defs.h b/src/uln200xa/uln200xa_defs.h
+deleted file mode 100644
+index 4e9e210..0000000
+--- a/src/uln200xa/uln200xa_defs.h
++++ /dev/null
+@@ -1,41 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2016 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-#pragma once
+-
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-    /**
+-     * Enum to specify the direction of a motor
+-     */
+-    typedef enum {
+-      ULN200XA_DIR_CW   = 0x01,
+-      ULN200XA_DIR_CCW  = 0x02
+-    } ULN200XA_DIRECTION_T;
+-
+-#ifdef __cplusplus
+-}
+-#endif
+diff --git a/src/ultrasonic/CMakeLists.txt b/src/ultrasonic/CMakeLists.txt
+deleted file mode 100644
+index a89fe56..0000000
+--- a/src/ultrasonic/CMakeLists.txt
++++ /dev/null
+@@ -1,5 +0,0 @@
+-set (libname "ultrasonic")
+-set (libdescription "Ultrasonic Proximity Sensor")
+-set (module_src ${libname}.cxx)
+-set (module_hpp ${libname}.hpp)
+-upm_module_init(mraa)
+diff --git a/src/ultrasonic/ultrasonic.cxx b/src/ultrasonic/ultrasonic.cxx
+deleted file mode 100644
+index 51070e3..0000000
+--- a/src/ultrasonic/ultrasonic.cxx
++++ /dev/null
+@@ -1,102 +0,0 @@
+-/*
+- * Author: Jun Kato <i@junkato.jp>
+- * Copyright (c) 2015 Jun Kato.
+- *
+- * Thanks to Seeed Studio for a working arduino sketch
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#include <iostream>
+-#include <unistd.h>
+-#include <stdlib.h>
+-#include <functional>
+-
+-#include "ultrasonic.hpp"
+-
+-using namespace upm;
+-
+-UltraSonic::UltraSonic (int pin) {
+-    m_name = "UltraSonic";
+-
+-    mraa_init();
+-
+-    // setup pin
+-    m_pinCtx = mraa_gpio_init(pin);
+-    if (m_pinCtx == NULL) {
+-        fprintf (stderr, "Are you sure that pin%d you requested is valid on your platform?", pin);
+-        exit (1);
+-    }
+-    mraa_gpio_isr (m_pinCtx, MRAA_GPIO_EDGE_BOTH,
+-                   &signalISR, this);
+-}
+-
+-UltraSonic::~UltraSonic () {
+-
+-    // close pin
+-    mraa_gpio_isr_exit(m_pinCtx);
+-    mraa_gpio_close (m_pinCtx);
+-}
+-
+-int
+-UltraSonic::getDistance () {
+-
+-    // output trigger signal
+-    mraa_gpio_dir(m_pinCtx, MRAA_GPIO_OUT);
+-    mraa_gpio_write(m_pinCtx, LOW);
+-    usleep(2);
+-    mraa_gpio_write(m_pinCtx, HIGH);
+-    usleep(5);
+-    mraa_gpio_write(m_pinCtx, LOW);
+-
+-    // wait for the pulse,
+-    m_doWork = true;
+-    m_InterruptCounter = 0;
+-    mraa_gpio_dir(m_pinCtx, MRAA_GPIO_IN);
+-
+-    // though do not wait over 25 [ms].
+-    int timer = 0;
+-    while (m_doWork && timer++ < 5) {
+-        // in 25 [ms], sound travels 25000 / 29 / 2 = 431 [cm],
+-        // which is more than 400 [cm], the max distance measurable with this sensor.
+-        usleep(5 * 1000); // 5 [ms]
+-    }
+-
+-    // calc diff
+-    long diff = m_FallingTimeStamp.tv_usec - m_RisingTimeStamp.tv_usec;
+-    diff += (m_FallingTimeStamp.tv_sec - m_RisingTimeStamp.tv_sec) * 1000000;
+-    return timer >= 5 ? 0 : diff;
+-}
+-
+-void
+-UltraSonic::signalISR(void *ctx) {
+-    upm::UltraSonic *This = (upm::UltraSonic *)ctx;
+-    This->ackEdgeDetected();
+-}
+-
+-void
+-UltraSonic::ackEdgeDetected () {
+-    if (++m_InterruptCounter % 2 == 0) {
+-        gettimeofday(&m_FallingTimeStamp, NULL);
+-        m_doWork = false;
+-    } else {
+-        gettimeofday(&m_RisingTimeStamp, NULL);
+-    }
+-}
+diff --git a/src/ultrasonic/ultrasonic.hpp b/src/ultrasonic/ultrasonic.hpp
+deleted file mode 100644
+index f30a37e..0000000
+--- a/src/ultrasonic/ultrasonic.hpp
++++ /dev/null
+@@ -1,122 +0,0 @@
+-/*
+- * Author: Jun Kato <i@junkato.jp>
+- * Copyright (c) 2015 Jun Kato.
+- *
+- * Thanks to Seeed Studio for a working arduino sketch
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-#pragma once
+-
+-#include <string>
+-#include <mraa/aio.h>
+-#include <mraa/gpio.h>
+-#include <sys/time.h>
+-
+-#define HIGH                   1
+-#define LOW                    0
+-
+-namespace upm {
+-
+-/**
+- * @brief Ultrasonic Sensor
+- * @defgroup ultrasonic libupm-ultrasonic
+- * @ingroup seeed gpio sound
+- */
+-
+-/**
+- * @library ultrasonic
+- * @sensor ultrasonic
+- * @comname Ultrasonic Proximity Sensor
+- * @type sound
+- * @man seeed
+- * @web http://wiki.seeed.cc/Grove-Ultrasonic_Ranger/
+- * @con gpio
+- *
+- * @brief API for Grove Ultrasonic Ranger
+- *
+- * This Grove Ultrasonic sensor is a non-contact distance measurement module
+- * which is compatible with the Grove system. It is designed for easy modular
+- * project usage with industrial performance. Detection ranges from 3 cm (1.2")
+- * to 4 m (13'1.5") and works best when the object is within a 30 degree angle
+- * relative to the sensor.
+- *
+- * @image html ultrasonic.jpg
+- * @snippet ultrasonic.cxx Interesting
+- */
+-class UltraSonic {
+-    public:
+-        /**
+-         * Instantiates a UltraSonic object
+-         *
+-         * @param pin pin for triggering the sensor for distance and for receiving pulse response
+-         */
+-        UltraSonic (int pin);
+-
+-        /**
+-         * UltraSonic object destructor.
+-         */
+-        ~UltraSonic ();
+-
+-        /**
+-         * Returns the echo's pulse width from the sensor in microseconds.
+-         * Divide by 58 to convert distance to centimetres. 
+-         * Divide by 148 to convert distance to inches.
+-         */
+-        int getDistance ();
+-
+-        /**
+-         * Return name of the component
+-         */
+-        std::string name()
+-        {
+-            return m_name;
+-        }
+-
+-        /**
+-         * Returns true while the sensor is busy waiting for the echo pulse
+-         */
+-        bool working()
+-        {
+-            return m_doWork;
+-        }
+-
+-    private:
+-        bool m_doWork; /* Flag to control blocking function while waiting for falling edge interrupt */
+-        mraa_gpio_context m_pinCtx;
+-        uint8_t m_InterruptCounter;
+-        struct timeval m_RisingTimeStamp;
+-        struct timeval m_FallingTimeStamp;
+-        std::string m_name;
+-
+-        /**
+-         * ISR for the pulse signal
+-         */
+-        static void signalISR(void *ctx);
+-
+-        /**
+-         * On each interrupt this function will detect if the interrupt
+-         * was falling edge or rising.
+-         * Should be called from the interrupt handler.
+-         */
+-        void ackEdgeDetected ();
+-};
+-
+-}
+diff --git a/src/ultrasonic/ultrasonic.i b/src/ultrasonic/ultrasonic.i
+deleted file mode 100644
+index 6a9de92..0000000
+--- a/src/ultrasonic/ultrasonic.i
++++ /dev/null
+@@ -1,16 +0,0 @@
+-%include "../common_top.i"
+-
+-/* BEGIN Java syntax  ------------------------------------------------------- */
+-#ifdef SWIGJAVA
+-%ignore signalISR;
+-
+-JAVA_JNI_LOADLIBRARY(javaupm_ultrasonic)
+-#endif
+-/* END Java syntax */
+-
+-/* BEGIN Common SWIG syntax ------------------------------------------------- */
+-%{
+-#include "ultrasonic.hpp"
+-%}
+-%include "ultrasonic.hpp"
+-/* END Common SWIG syntax */
+diff --git a/src/ultrasonic/ultrasonic.json b/src/ultrasonic/ultrasonic.json
+deleted file mode 100644
+index eb98549..0000000
+--- a/src/ultrasonic/ultrasonic.json
++++ /dev/null
+@@ -1,61 +0,0 @@
+-{
+-    "Library": "ultrasonic",
+-    "Description": "Grove ultrasonic sensor Library",
+-    "Sensor Class": {
+-        "UltraSonic": {
+-            "Name": "API for the Grove Ultrasonic Ranger",
+-            "Description": "This is the UPM Module for the Grove Ultrasonic Ranger. This Grove Ultrasonic sensor is a non-contact distance measurement module which is compatible with the Grove system. It is designed for easy modular project usage with industrial performance. Detection ranges from 3 cm (1.2\") to 4 m (13'1.5\") and works best when the object is within a 30 degree angle relative to the sensor.",
+-            "Aliases": ["ultrasonic", "Grove - Ultrasonic Ranger"],
+-            "Categories": ["sound"],
+-            "Connections": ["gpio"],
+-            "Project Type": ["prototyping", "robotics", "commercial"],
+-            "Manufacturers": ["Seeed"],
+-            "Image": "ultrasonic.jpg",
+-            "Examples": {
+-                "Node.js": ["ultrasonic.js"],
+-                "C++": ["ultrasonic.cxx"]
+-            },
+-            "Specifications": {
+-                "Vsource": {
+-                    "unit": "V",
+-                    "min": 3.2,
+-                    "max": 5.2
+-                },
+-                "Supply Current": {
+-                    "unit": "mA",
+-                    "typ" : 8
+-                },
+-                "Operating Temperature": {
+-                    "unit": "°C",
+-                    "min": -40,
+-                    "max": 85
+-                },
+-                "Ultrasonic Frequency": {
+-                    "unit": "kHz",
+-                    "typ" : 40
+-                },
+-                "Effective Range": {
+-                    "unit": "cm",
+-                    "min" : 2,
+-                    "max" : 350
+-                },
+-                "Resolution": {
+-                    "unit": "cm",
+-                    "min" : -1,
+-                    "max" : 1
+-                }
+-            },
+-            "Platforms": {
+-                "Intel Edison": {
+-                    "Notes": ["Might need Grove base shield"]
+-                },
+-                "Arduino 101": {
+-                    "Notes": ["Might need Grove base shield"]
+-                }
+-            },
+-            "Urls": {
+-                "Product Pages": ["https://www.seeedstudio.com/Grove-Ultrasonic-Ranger-p-960.html", "http://wiki.seeed.cc/Grove-Ultrasonic_Ranger/"]
+-            }
+-        }
+-    }
+-}
+diff --git a/src/urm37/CMakeLists.txt b/src/urm37/CMakeLists.txt
+deleted file mode 100644
+index a73ad44..0000000
+--- a/src/urm37/CMakeLists.txt
++++ /dev/null
+@@ -1,9 +0,0 @@
+-upm_mixed_module_init (NAME urm37
+-    DESCRIPTION "Ultrasonic Range Finder"
+-    C_HDR urm37.h
+-    C_SRC urm37.c
+-    CPP_HDR urm37.hpp
+-    CPP_SRC urm37.cxx
+-    FTI_SRC urm37_fti.c
+-    CPP_WRAPS_C
+-    REQUIRES mraa utilities-c)
+diff --git a/src/urm37/urm37.c b/src/urm37/urm37.c
+deleted file mode 100644
+index 1bd20b1..0000000
+--- a/src/urm37/urm37.c
++++ /dev/null
+@@ -1,393 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- *         Abhishek Malik <abhishek.malik@intel.com>
+- * Copyright (c) 2016 Intel Corporation.
+- *
+- * Thanks to Adafruit for supplying a google translated version of the
+- * Chinese datasheet and some clues in their code.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#include <string.h>
+-
+-#include "urm37.h"
+-
+-#include "upm_utilities.h"
+-
+-#define URM37_MAX_DATA_LEN      4
+-#define URM37_WAIT_TIMEOUT      1000
+-#define URM37_MAX_RETRIES       10
+-
+-urm37_context urm37_init(int a_pin, int reset_pin,
+-                         int trigger_pin, float a_ref,
+-                         int uart_bus, bool analog_mode)
+-{
+-  // make sure MRAA is initialized
+-  int mraa_rv;
+-  if ((mraa_rv = mraa_init()) != MRAA_SUCCESS)
+-  {
+-      printf("%s: mraa_init() failed (%d).\n", __FUNCTION__, mraa_rv);
+-      return NULL;
+-  }
+-
+-  urm37_context dev = (urm37_context)malloc(sizeof(struct _urm37_context));
+-
+-  if (!dev)
+-    return NULL;
+-
+-  // clear out context
+-  memset((void *)dev, 0, sizeof(struct _urm37_context));
+-  
+-  // NULL out MRAA contexts for now (redundant with memset I know, but...)
+-  dev->aio = NULL;
+-  dev->gpio_reset = NULL;
+-  dev->gpio_trigger = NULL;
+-  dev->uart = NULL;
+-
+-  dev->a_res = 0;
+-  dev->a_ref = a_ref;
+-
+-  // set the mode
+-  dev->is_analog_mode = analog_mode;
+-
+-  // initialize the MRAA contexts (only what we need)
+-
+-  // analog only
+-  if (dev->is_analog_mode)
+-    {
+-      if (!(dev->aio = mraa_aio_init(a_pin)))
+-        {
+-          printf("%s: mraa_aio_init() failed.\n", __FUNCTION__);
+-          urm37_close(dev);
+-          return NULL;
+-        }
+-
+-      // ADC resolution
+-      dev->a_res = (float)(1 << mraa_aio_get_bit(dev->aio)) - 1;
+-
+-      if (!(dev->gpio_trigger = mraa_gpio_init(trigger_pin)))
+-        {
+-          printf("%s: mraa_gpio_init(trigger) failed.\n", __FUNCTION__);
+-          urm37_close(dev);
+-          return NULL;
+-        }
+-
+-      mraa_gpio_dir(dev->gpio_trigger, MRAA_GPIO_OUT);
+-      mraa_gpio_write(dev->gpio_trigger, 1);
+-    }
+-  else
+-    {
+-      // UART only
+-      if (!(dev->uart = mraa_uart_init(uart_bus)))
+-        {
+-          printf("%s: mraa_uart_init() failed.\n", __FUNCTION__);
+-          urm37_close(dev);
+-          return NULL;
+-        }
+-
+-      mraa_uart_set_baudrate(dev->uart, 9600);
+-      mraa_uart_set_non_blocking(dev->uart, false);
+-    }
+-
+-  // reset - used by both analog and uart modes
+-  if (!(dev->gpio_reset = mraa_gpio_init(reset_pin)))
+-    {
+-      printf("%s: mraa_gpio_init(reset) failed.\n", __FUNCTION__);
+-      urm37_close(dev);
+-      return NULL;
+-    }
+-
+-  mraa_gpio_dir(dev->gpio_reset, MRAA_GPIO_OUT);
+-
+-  urm37_reset(dev);
+-
+-  return dev;
+-}
+-
+-void urm37_close(urm37_context dev)
+-{
+-  if (dev->aio)
+-    mraa_aio_close(dev->aio);
+-  if (dev->gpio_reset)
+-    mraa_gpio_close(dev->gpio_reset);
+-  if (dev->gpio_trigger)
+-    mraa_gpio_close(dev->gpio_trigger);
+-  if (dev->uart)
+-    mraa_uart_stop(dev->uart);
+-
+-  free(dev);
+-}
+-
+-upm_result_t urm37_reset(urm37_context dev)
+-{
+-  mraa_gpio_write(dev->gpio_reset, 0);
+-  upm_delay_us(100);
+-  mraa_gpio_write(dev->gpio_reset, 1);
+-
+-  // wait for reset to complete
+-  upm_delay(3);
+-
+-  return UPM_SUCCESS;
+-}
+-
+-// private
+-static bool urm37_data_available(urm37_context dev, uint32_t millis)
+-{
+-  if (mraa_uart_data_available(dev->uart, millis))
+-    return true;
+-  else
+-    return false;
+-}
+-
+-// private
+-static int urm37_read_data(urm37_context dev, char* data)
+-{
+-  return mraa_uart_read(dev->uart, data, (size_t)URM37_MAX_DATA_LEN);
+-}
+-
+-// private
+-static int urm37_write_data(urm37_context dev, const char* data)
+-{
+-  mraa_uart_flush(dev->uart);
+-  return mraa_uart_write(dev->uart, data, (size_t)URM37_MAX_DATA_LEN);
+-}
+-
+-upm_result_t urm37_send_command(urm37_context dev, char* cmd, char* response)
+-{
+-  if (dev->is_analog_mode)
+-    {
+-      printf("%s: UART commands are not available in analog mode\n",
+-             __FUNCTION__);
+-      
+-      return UPM_ERROR_NOT_SUPPORTED;
+-    }
+-
+-  int tries = 0;
+-
+-  while (tries++ < URM37_MAX_RETRIES)
+-    {
+-      if (urm37_write_data(dev, cmd) < 0)
+-        {
+-          // A write error of some kind.  We don't try to continue
+-          // after this.
+-          printf("%s: write_data() failed\n", __FUNCTION__);
+-
+-          return UPM_ERROR_OPERATION_FAILED;
+-        }
+-
+-      if (!urm37_data_available(dev, URM37_WAIT_TIMEOUT))
+-        {
+-          // timeout, retry...
+-          continue;
+-        }
+-
+-      int rv = urm37_read_data(dev, response);
+-      if (rv < 0)
+-        {
+-          printf("%s: read_data() failed\n", __FUNCTION__);
+-          return UPM_ERROR_OPERATION_FAILED;
+-        }
+-
+-      if (rv != URM37_MAX_DATA_LEN)
+-        {
+-          // read wrong number of bytes...
+-          printf("%s: read_data() returned %d bytes, expected %d, retrying\n",
+-                 __FUNCTION__, rv, URM37_MAX_DATA_LEN);
+-          continue;
+-        }
+-      else
+-        {
+-          // we have data, verify cksum, return the response if it's
+-          // good, retry otherwise
+-          uint8_t cksum = (uint8_t)(response[0] + response[1] + response[2]);
+-
+-          if ((uint8_t)response[3] != cksum)
+-            {
+-              printf("%s: checksum failure: got %d, expected %d, retrying\n",
+-                     __FUNCTION__, (int)response[3], (int)cksum);
+-              continue;
+-            }
+-
+-          // all good
+-          return UPM_SUCCESS;
+-        }
+-    }
+-
+-  // If we are here, we timed out and all retries were exhausted
+-  return UPM_ERROR_TIMED_OUT;
+-}
+-
+-upm_result_t urm37_get_distance(urm37_context dev, float *distance,
+-                                int degrees)
+-{
+-  if (dev->is_analog_mode)
+-    {
+-      // analog mode
+-      int val;
+-
+-      // send the trigger pulse and sample
+-      mraa_gpio_write(dev->gpio_trigger, 0);
+-      val = mraa_aio_read(dev->aio);
+-      mraa_gpio_write(dev->gpio_trigger, 1);
+-
+-      // convert to mV
+-      float volts = ((float)val * (dev->a_ref / dev->a_res)) * 1000.0;
+-
+-      // 6.8 mV/cm
+-      *distance = volts/6.8;
+-      return UPM_SUCCESS;
+-    }
+-
+-  // UART mode
+-
+-  char cmd[URM37_MAX_DATA_LEN];
+-  char resp[URM37_MAX_DATA_LEN];
+-
+-  // divide degrees by 6 - this is the encoding URM37 uses.
+-  uint8_t deg = (uint8_t)(degrees / 6);
+-  if (deg > 46)
+-    {
+-      printf("%s: Degrees out of range, must be between 0-270\n",
+-             __FUNCTION__);
+-      return UPM_ERROR_OUT_OF_RANGE;
+-    }
+-
+-  uint8_t cksum = 0x22 + deg + 0x00;
+-  cmd[0] = 0x22;
+-  cmd[1] = deg;
+-  cmd[2] = 0x00;
+-  cmd[3] = cksum;
+-
+-  if (urm37_send_command(dev, cmd, resp) != UPM_SUCCESS)
+-    {
+-      printf("%s: urm37_send_command() failed\n", __FUNCTION__);
+-      return UPM_ERROR_OPERATION_FAILED;
+-    }
+-
+-  uint8_t h = (uint8_t) resp[1];
+-  uint8_t l = (uint8_t) resp[2];
+-
+-  *distance = (float)((h << 8) | l);
+-
+-  return UPM_SUCCESS;
+-}
+-
+-upm_result_t urm37_get_temperature(urm37_context dev, float* temperature)
+-{
+-  if (dev->is_analog_mode)
+-    {
+-      printf("%s: Temperature measurement is not available in analog mode\n",
+-             __FUNCTION__);
+-      return UPM_ERROR_NOT_SUPPORTED;
+-    }
+-
+-  // UART mode
+-  char cmd[URM37_MAX_DATA_LEN];
+-
+-  // get temperature sequence
+-  cmd[0] = 0x11;
+-  cmd[1] = 0x00;
+-  cmd[2] = 0x00;
+-  cmd[3] = 0x11; // cksum
+-
+-  char resp[URM37_MAX_DATA_LEN];
+-  if (urm37_send_command(dev, cmd, resp) != UPM_SUCCESS)
+-    {
+-      printf("%s: urm37_send_command() failed\n", __FUNCTION__);
+-      return UPM_ERROR_OPERATION_FAILED;
+-    }
+-
+-  uint8_t h = (uint8_t) resp[1];
+-  uint8_t l = (uint8_t) resp[2];
+-
+-  *temperature = (float)((h & 0x0f) * 256 + l) / 10.0;
+-
+-  if (h & 0xf0)
+-    *temperature *= -1;
+-
+-  return UPM_SUCCESS;
+-}
+-
+-upm_result_t urm37_read_eeprom(urm37_context dev, uint8_t addr, uint8_t* value)
+-{
+-  if (dev->is_analog_mode)
+-    {
+-      printf("%s: EEPROM is not available in analog mode\n",
+-             __FUNCTION__);
+-      return UPM_ERROR_NOT_SUPPORTED;
+-    }
+-
+-  if (addr > 0x04)
+-    {
+-      printf("Address must be between 0x00-0x04");
+-      return UPM_ERROR_OUT_OF_RANGE;
+-    }
+-
+-  char cmd[URM37_MAX_DATA_LEN];
+-  uint8_t cksum = 0x33 + addr + 0x00;
+-  cmd[0] = 0x33;
+-  cmd[1] = addr;
+-  cmd[2] = 0x00;
+-  cmd[3] = cksum;
+-
+-  char resp[URM37_MAX_DATA_LEN];
+-
+-  if (urm37_send_command(dev, cmd, resp) != UPM_SUCCESS)
+-    {
+-      printf("%s: urm37_send_command() failed\n", __FUNCTION__);
+-      return UPM_ERROR_OPERATION_FAILED;
+-    }
+-
+-  *value = resp[2];
+-  return UPM_SUCCESS;
+-}
+-
+-upm_result_t urm37_write_eeprom(urm37_context dev, uint8_t addr, uint8_t value)
+-{
+-  if (dev->is_analog_mode)
+-    {
+-      printf("%s: EEPROM is not available in analog mode\n",
+-             __FUNCTION__);
+-      return UPM_ERROR_NOT_SUPPORTED;
+-    }
+-
+-  if (addr > 0x04)
+-    {
+-      printf("Address must be between 0x00-0x04");
+-      return UPM_ERROR_OUT_OF_RANGE;
+-    }
+-
+-  char cmd[URM37_MAX_DATA_LEN];
+-  uint8_t cksum = 0x44 + addr + value;
+-  cmd[0] = 0x44;
+-  cmd[1] = addr;
+-  cmd[2] = value;
+-  cmd[3] = cksum;
+-
+-  char resp[URM37_MAX_DATA_LEN]; // throw away
+-  if (urm37_send_command(dev, cmd, resp) != UPM_SUCCESS)
+-    {
+-      printf("%s: urm37_send_command() failed\n", __FUNCTION__);
+-      return UPM_ERROR_OPERATION_FAILED;
+-    }
+-
+-  return UPM_SUCCESS;
+-}
+diff --git a/src/urm37/urm37.cxx b/src/urm37/urm37.cxx
+deleted file mode 100644
+index 485668a..0000000
+--- a/src/urm37/urm37.cxx
++++ /dev/null
+@@ -1,98 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2015 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#include <iostream>
+-#include <stdexcept>
+-
+-#include "urm37.hpp"
+-
+-using namespace upm;
+-using namespace std;
+-
+-URM37::URM37(int aPin, int resetPin, int triggerPin, float aref) :
+-  m_urm37(urm37_init(aPin, resetPin, triggerPin, aref, 0, true))
+-{
+-  if (!m_urm37)
+-    throw std::runtime_error(string(__FUNCTION__) +
+-                             ": urm37_init() failed");
+-}
+-
+-URM37::URM37(int uart, int resetPin) :
+-  m_urm37(urm37_init(0, resetPin, 0, 0, uart, false))
+-{
+-  if (!m_urm37)
+-    throw std::runtime_error(string(__FUNCTION__) +
+-                             ": urm37_init() failed");
+-}
+-
+-URM37::~URM37()
+-{
+-  urm37_close(m_urm37);
+-}
+-
+-void URM37::reset()
+-{
+-  urm37_reset(m_urm37);
+-}
+-
+-float URM37::getDistance(int degrees)
+-{
+-  float distance;
+-
+-  if (urm37_get_distance(m_urm37, &distance, degrees) != UPM_SUCCESS)
+-    throw std::runtime_error(string(__FUNCTION__) +
+-                             ": urm37_get_distance() failed");
+-
+-  return (distance);
+-}
+-
+-float URM37::getTemperature()
+-{
+-  float temperature;
+-
+-  if (urm37_get_temperature(m_urm37, &temperature) != UPM_SUCCESS)
+-    throw std::runtime_error(string(__FUNCTION__) +
+-                             ": urm37_get_temperature() failed");
+-
+-  return temperature;
+-}
+-
+-uint8_t URM37::readEEPROM(uint8_t addr)
+-{
+-  uint8_t value;
+-
+-  if (urm37_read_eeprom(m_urm37, addr, &value) != UPM_SUCCESS)
+-    throw std::runtime_error(string(__FUNCTION__) +
+-                             ": urm37_read_eeprom() failed");
+-
+-  return value;
+-}
+-
+-void URM37::writeEEPROM(uint8_t addr, uint8_t value)
+-{
+-  if (urm37_write_eeprom(m_urm37, addr, value) != UPM_SUCCESS)
+-    throw std::runtime_error(string(__FUNCTION__) +
+-                             ": urm37_write_eeprom() failed");
+-}
+-
+diff --git a/src/urm37/urm37.h b/src/urm37/urm37.h
+deleted file mode 100644
+index 18cca3e..0000000
+--- a/src/urm37/urm37.h
++++ /dev/null
+@@ -1,159 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- *         Abhishek Malik <abhishek.malik@intel.com>
+- * Copyright (c) 2016 Intel Corporation.
+- *
+- * Thanks to Adafruit for supplying a google translated version of the
+- * Chinese datasheet and some clues in their code.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#ifndef URM37_H_
+-#define URM37_H_
+-
+-#include <stdint.h>
+-#include "upm.h"
+-#include "mraa/aio.h"
+-#include "mraa/gpio.h"
+-#include "mraa/uart.h"
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-/**
+- * @file urm37.h
+- * @library urm37
+- * @brief C API for the URM37 Ultrasonic Ranger
+- *
+- * An example using analog mode
+- * @include urm37.c Interesting
+- * An example using UART mode
+- * @include urm37-uart.c Interesting
+- */
+-
+-/**
+- * device context
+- */
+-typedef struct _urm37_context {
+-  mraa_aio_context    aio;
+-  mraa_gpio_context   gpio_reset;
+-  mraa_gpio_context   gpio_trigger;
+-  mraa_uart_context   uart;
+-
+-  bool                is_analog_mode;
+-
+-  float               a_ref;
+-  float               a_res;
+-} *urm37_context;
+-
+-/**
+- * URM37 Initializer
+- *
+- * @param a_pin Analog pin to use. Ignored in UART mode.
+- * @param reset_pin GPIO pin to use for reset
+- * @param trigger_pin GPIO pin to use for triggering a distance
+- * measurement. Ignored in UART mode.
+- * @param a_ref The analog reference voltage. Ignored in UART mode.
+- * @param uart Default UART to use (0 or 1). Ignored in analog mode.
+- * @param mode true for analog mode, false otherwise.
+- */
+-urm37_context urm37_init(int a_pin, int reset_pin,
+-                         int trigger_pin, float a_ref, 
+-                         int uart, bool analog_mode);
+-
+-/**
+- * URM37 sensor close function
+- */
+-void urm37_close(urm37_context dev);
+-
+-/**
+- * Reset the device.  This will take approximately 3 seconds to
+- * complete.
+- *
+- * @param dev sensor context
+- */
+-upm_result_t urm37_reset(urm37_context dev);
+-
+-/**
+- * Get the distance measurement.  A return value of 65535.0
+- * in UART mode indicates an invalid measurement.
+- *
+- * @param dev sensor context
+- * @param distance A pointer to a float that will contain the distance
+- * in CM if the measurement is successful.
+- * @param degrees In UART mode, this specifies the degrees to turn an
+- * attached PWM servo connected to the MOTO output on the URM37.
+- * Valid values are 0-270.  This option is ignored in analog mode.  If
+- * you are not using this functionality, just pass 0.
+- * @return UPM status code
+- */
+-upm_result_t urm37_get_distance(urm37_context dev, float *distance,
+-                                int degrees);
+-
+-/**
+- * Get the temperature measurement.  This is only valid in UART mode.
+- *
+- * @param dev sensor context
+- * @param temperature A float pointer containing the measured
+- * temperature in degrees C
+- * @return UPM status code
+- *
+- */
+-upm_result_t urm37_get_temperature(urm37_context dev, float* temperature);
+-
+-/**
+- * In UART mode only, read a value from the EEPROM and return it.
+- *
+- * @param dev sensor context
+- * @param addr The address in the EEPROM to read.  Valid values
+- * are between 0x00-0x04.
+- * @param value A pointer containing the returned value.
+- * @return UPM status code
+- */
+-upm_result_t urm37_read_eeprom(urm37_context dev, uint8_t addr, uint8_t* value);
+-
+-/**
+- * In UART mode only, write a value into an address on the EEPROM.
+- *
+- * @param dev sensor context
+- * @param addr The address in the EEPROM to write.  Valid values
+- * are between 0x00-0x04.
+- * @param value The value to write
+- * @return UPM status code
+- */
+-upm_result_t urm37_write_eeprom(urm37_context dev, uint8_t addr, uint8_t value);
+-
+-/**
+- * In UART mode only, send a 4-byte command, and return a 4-byte response.
+- *
+- * @param dev sensor context
+- * @param cmd A 4-byte command to transmit
+- * @param response The 4-byte response
+- * @return UPM response code (success, failure, or timeout)
+- */
+-upm_result_t urm37_send_command(urm37_context dev, char* cmd, char* response);
+-
+-#ifdef __cplusplus
+-}
+-#endif
+-
+-#endif /* URM37_H_ */
+diff --git a/src/urm37/urm37.hpp b/src/urm37/urm37.hpp
+deleted file mode 100644
+index 0fe1844..0000000
+--- a/src/urm37/urm37.hpp
++++ /dev/null
+@@ -1,159 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2015-2016 Intel Corporation.
+- *
+- * Thanks to Adafruit for supplying a google translated version of the
+- * Chinese datasheet and some clues in their code.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-#pragma once
+-
+-#include <string>
+-#include <iostream>
+-
+-#include <stdlib.h>
+-#include <unistd.h>
+-#include <string.h>
+-
+-#include "urm37.h"
+-
+-namespace upm {
+-    /**
+-     * @brief URM37 Ultrasonic Ranger
+-     * @defgroup urm37 libupm-urm37
+-     * @ingroup dfrobot uart gpio analog sound
+-     */
+-
+-    /**
+-     * @library urm37
+-     * @sensor urm37
+-     * @comname Ultrasonic Range Finder
+-     * @type sound
+-     * @man dfrobot
+-     * @con uart analog gpio
+-     * @web http://www.dfrobot.com/index.php?route=product/product&product_id=53
+-     *
+-     * @brief API for the DFRobot URM37 Ultrasonic Ranger
+-     *
+-     * This library was tested with the DFRobot URM37 Ultrasonic Ranger,
+-     * V4.  It has a range of between 5 and 500 centimeters (cm).  It
+-     * supports both analog distance measurement, and UART based
+-     * temperature and distance measurements.  This driver does not
+-     * support PWM measurement mode.
+-     *
+-     * For UART operation, the only supported baud rate is 9600.  In
+-     * addition, you must ensure that the UART TX/RX pins are
+-     * configured for TTL operation (the factory default) rather than
+-     * RS232 operation, or permanent damage to your URM37 and/or MCU
+-     * will result.  On power up, the LED indicator will blink one
+-     * long pulse, followed by one short pulse to indicate TTL
+-     * operation.  See the DFRobot wiki for more information:
+-     *
+-     * (https://www.dfrobot.com/wiki/index.php?title=URM37_V4.0_Ultrasonic_Sensor_%28SKU:SEN0001%29)
+-     *
+-     * @image html urm37.jpg
+-     * An example using analog mode
+-     * @snippet urm37.cxx Interesting
+-     * An example using UART mode
+-     * @snippet urm37-uart.cxx Interesting
+-     */
+-
+-  class URM37 {
+-  public:
+-
+-    /**
+-     * URM37 object constructor (Analog mode)
+-     *
+-     * @param aPin Analog pin to use
+-     * @param resetPin GPIO pin to use for reset
+-     * @param triggerPin GPIO pin to use for triggering a distance measurement
+-     * @param aref The analog reference voltage, default 5.0
+-     */
+-    URM37(int aPin, int resetPin, int triggerPin, float aref=5.0);
+-
+-    /**
+-     * URM37 object constructor (UART mode)
+-     *
+-     * @param uart Default UART to use (0 or 1).
+-     * @param resetPin GPIO pin to use for reset
+-     */
+-    URM37(int uart, int resetPin);
+-
+-    /**
+-     * URM37 object destructor
+-     */
+-    ~URM37();
+-
+-    /**
+-     * Reset the device.  This will take approximately 3 seconds to
+-     * complete.
+-     *
+-     */
+-    void reset();
+-
+-    /**
+-     * Get the distance measurement.  A return value of 65535.0
+-     * in UART mode indicates an invalid measurement.
+-     *
+-     * @param degrees in UART mode, this specifies the degrees to turn
+-     * an attached PWM servo connected to the MOTO output on the
+-     * URM37.  Default is 0.  Valid values are 0-270.  This option is
+-     * ignored in analog mode.
+-     * @return The measured distance in cm
+-     */
+-    float getDistance(int degrees=0);
+-
+-    /**
+-     * Get the temperature measurement.  This is only valid in UART mode.
+-     *
+-     * @return The measured temperature in degrees C
+-     */
+-    float getTemperature();
+-
+-    /**
+-     * In UART mode only, read a value from the EEPROM and return it.
+-     *
+-     * @param addr The address in the EEPROM to read.  Valid values
+-     * are between 0x00-0x04.
+-     * @return The EEPROM value at addr
+-     */
+-    uint8_t readEEPROM(uint8_t addr);
+-
+-    /**
+-     * In UART mode only, write a value into an address on the EEPROM.
+-     *
+-     * @param addr The address in the EEPROM to write.  Valid values
+-     * are between 0x00-0x04.
+-     * @param value The value to write
+-     * @return The EEPROM value at addr
+-     */
+-    void writeEEPROM(uint8_t addr, uint8_t value);
+-
+-  protected:
+-    // urm37 device context
+-    urm37_context m_urm37;
+-
+-  private:
+-    /* Disable implicit copy and assignment operators */
+-    URM37(const URM37&) = delete;
+-    URM37 &operator=(const URM37&) = delete;
+-  };
+-}
+diff --git a/src/urm37/urm37.i b/src/urm37/urm37.i
+deleted file mode 100644
+index 16cd9fc..0000000
+--- a/src/urm37/urm37.i
++++ /dev/null
+@@ -1,14 +0,0 @@
+-%include "../common_top.i"
+-
+-/* BEGIN Java syntax  ------------------------------------------------------- */
+-#ifdef SWIGJAVA
+-JAVA_JNI_LOADLIBRARY(javaupm_urm37)
+-#endif
+-/* END Java syntax */
+-
+-/* BEGIN Common SWIG syntax ------------------------------------------------- */
+-%{
+-#include "urm37.hpp"
+-%}
+-%include "urm37.hpp"
+-/* END Common SWIG syntax */
+diff --git a/src/urm37/urm37.json b/src/urm37/urm37.json
+deleted file mode 100644
+index d5daeeb..0000000
+--- a/src/urm37/urm37.json
++++ /dev/null
+@@ -1,50 +0,0 @@
+-{
+-    "Library": "urm37",
+-    "Description": "DFRobot URM37 Ultrasonic Ranger Library",
+-    "Sensor Class": {
+-        "URM37": {
+-            "Name": "API for the DFRobot URM37 Ultrasonic Ranger",
+-            "Description": "This is the UPM Module for the DFRobot URM37 Ultrasonic Ranger. This library was tested with the DFRobot URM37 Ultrasonic Ranger, V4.  It has a range of between 5 and 500 centimeters (cm).  It supports both analog distance measurement, and UART based temperature and distance measurements.  This driver does not support PWM measurement mode. For UART operation, the only supported baud rate is 9600.  In addition, you must ensure that the UART TX/RX pins are configured for TTL operation (the factory default) rather than RS232 operation, or permanent damage to your URM37 and/or MCU will result.  On power up, the LED indicator will blink one long pulse, followed by one short pulse to indicate TTL operation.",
+-            "Aliases": ["urm37", "URM37 V4.0 Ultrasonic Sensor"],
+-            "Categories": ["sound"],
+-            "Connections": ["uart", "ainput", "gpio"],
+-            "Project Type": ["prototyping", "robotics", "commercial"],
+-            "Manufacturers": ["DFRobot"],
+-            "Image": "urm37.jpg",
+-            "Examples": {
+-                "Python": ["urm37-uart.py", "urm37.py"],
+-                "Node.js": ["urm37-uart.js", "urm37.js"],
+-                "C++": ["urm37-uart.cxx", "urm37.cxx"],
+-                "C": ["urm37-uart.c", "urm37.c"]
+-            },
+-            "Specifications": {
+-                "Vsource": {
+-                    "unit": "V",
+-                    "min": 3.3,
+-                    "max": 5.0
+-                },
+-                "Supply Current": {
+-                    "unit": "mA",
+-                    "typ" : "<20"
+-                },
+-                "Operating Temperature": {
+-                    "unit": "°C",
+-                    "min": -10,
+-                    "max": 70
+-                },
+-                "Effective Range": {
+-                    "unit": "cm",
+-                    "min" : 5,
+-                    "max" : 500
+-                },
+-                "Resolution": {
+-                    "unit": "cm",
+-                    "resolution": 1
+-                }
+-            },
+-            "Urls": {
+-                "Product Pages": ["https://www.dfrobot.com/product-53.html", "https://www.dfrobot.com/wiki/index.php/URM37_V4.0_Ultrasonic_Sensor_(SKU:SEN0001)"]
+-            }
+-        }
+-    }
+-}
+diff --git a/src/urm37/urm37_fti.c b/src/urm37/urm37_fti.c
+deleted file mode 100644
+index 653a75b..0000000
+--- a/src/urm37/urm37_fti.c
++++ /dev/null
+@@ -1,109 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- *         Abhishek Malik <abhishek.malik@intel.com>
+- * Copyright (c) 2016 Intel Corporation.
+- *
+- * Thanks to Adafruit for supplying a google translated version of the
+- * Chinese datasheet and some clues in their code.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#include "urm37.h"
+-#include "upm_fti.h"
+-
+-/** 
+- * This file implements the Function Table Interface (FTI) for this sensor
+- */
+-
+-const char upm_light_name[] = "URM37";
+-const char upm_light_description[] = "Ultrasonic Ranger";
+-// problem here is it's an either/or analog vs. uart.  So we will just
+-// only support analog for now
+-// 1st gpio is reset, 2nd is trigger
+-const upm_protocol_t upm_light_protocol[] = {UPM_ANALOG, UPM_GPIO, UPM_GPIO};
+-const upm_sensor_t upm_light_category[] = {UPM_DISTANCE};
+-
+-// forward declarations
+-const void* upm_urm37_get_ft(upm_sensor_t sensor_type);
+-void* upm_urm37_init_name();
+-void upm_urm37_close(void* dev);
+-upm_result_t upm_urm37_get_distance(void* dev, float* distance,
+-                                    upm_distance_u unit);
+-
+-static const upm_sensor_ft ft =
+-{
+-    .upm_sensor_init_name = &upm_urm37_init_name,
+-    .upm_sensor_close = &upm_urm37_close,
+-};
+-
+-static const upm_distance_ft dft =
+-{
+-    .upm_distance_get_value = &upm_urm37_get_distance
+-};
+-
+-const void* upm_urm37_get_ft(upm_sensor_t sensor_type)
+-{
+-  switch(sensor_type)
+-    {
+-    case UPM_SENSOR:
+-      return &ft;
+-      
+-    case UPM_DISTANCE:
+-      return &dft;
+-      
+-    default:
+-      return NULL;
+-    }
+-}
+-
+-void* upm_urm37_init_name()
+-{
+-    return NULL;
+-}
+-
+-
+-void upm_urm37_close(void* dev)
+-{
+-    urm37_close((urm37_context)dev);
+-}
+-
+-upm_result_t upm_urm37_get_distance(void* dev, float* distance,
+-                                    upm_distance_u unit)
+-{
+-  // only cm returned by sensor
+-  float dist;
+-  urm37_get_distance((urm37_context)dev, &dist, 0);
+-
+-  switch(unit)
+-    {
+-    case CENTIMETER:
+-      *distance = dist;
+-      return UPM_SUCCESS;
+-
+-    case INCH:
+-      *distance = dist / 2.54;
+-      return UPM_SUCCESS;
+-
+-    default:
+-      return UPM_ERROR_INVALID_PARAMETER;
+-    }
+-}
+-
+diff --git a/src/vcap/CMakeLists.txt b/src/vcap/CMakeLists.txt
+deleted file mode 100644
+index 83964db..0000000
+--- a/src/vcap/CMakeLists.txt
++++ /dev/null
+@@ -1,10 +0,0 @@
+-set (libname "vcap")
+-set (libdescription "Video Frame Capture and Image Save Utility")
+-set (module_src ${libname}.cxx)
+-set (module_hpp ${libname}.hpp)
+-
+-if (JPEG_FOUND)
+-    set (reqlibname "jpeg")
+-    upm_module_init()
+-    target_link_libraries(${libname} jpeg)
+-endif()
+diff --git a/src/vcap/vcap.cxx b/src/vcap/vcap.cxx
+deleted file mode 100644
+index 9318271..0000000
+--- a/src/vcap/vcap.cxx
++++ /dev/null
+@@ -1,524 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2016 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#include <iostream>
+-#include <stdexcept>
+-#include <unistd.h>
+-#include <stdio.h>
+-#include <math.h>
+-#include <string.h>
+-
+-#include "vcap.hpp"
+-
+-using namespace upm;
+-using namespace std;
+-
+-#define CLAMP(_val, _min, _max) \
+-  (((_val) < (_min)) ? (_min) : (((_val) > (_max)) ? (_max) : (_val)))
+-
+-VCAP::VCAP(string videoDev) :
+-    m_fd(-1), m_buffer(0)
+-{
+-  memset(&m_caps, 0, sizeof(struct v4l2_capability));
+-  memset(&m_format, 0, sizeof(struct v4l2_format));
+-  
+-  m_debugging = false;
+-  m_bufferLen = 0;
+-  m_videoDevice = videoDev;
+-  setJPGQuality(VCAP_DEFAULT_JPEG_QUALITY);
+-
+-  // try to open the video device, and set a default format.
+-  if (!initVideoDevice())
+-    throw std::runtime_error(std::string(__FUNCTION__) +
+-                             ": initVideoDevice() failed");
+-
+-  m_height = 0;
+-  m_width = 0;
+-  m_imageCaptured = false;
+-}
+-
+-VCAP::~VCAP()
+-{
+-  releaseBuffer();
+-
+-  if (m_fd >= 0)
+-    close(m_fd);
+-
+-  m_fd = -1;
+-}
+-
+-bool VCAP::initVideoDevice()
+-{
+-  if (m_videoDevice.empty())
+-    return false;
+-
+-  if ((m_fd = open(m_videoDevice.c_str(), O_RDWR)) < 0)
+-    {
+-      cerr << __FUNCTION__ << ": open failed: " << strerror(errno) << endl;
+-      return false;
+-    }
+-  
+-  if (!checkCapabilities())
+-    {
+-      close(m_fd);
+-      m_fd = -1;
+-      return false;
+-    }
+-
+-  return true;
+-}
+-
+-// This seems... odd, but appears to be necessary.
+-// Ignore error and retry if the ioctl fails due to EINTR
+-int VCAP::xioctl(int fd, int request, void* argp)
+-{
+-  int r;
+-  
+-  do {
+-    r = ioctl(fd, request, argp);
+-  }
+-  while (r == -1 && errno == EINTR);
+-  
+-  return r;
+-}
+-
+-bool VCAP::checkCapabilities()
+-{
+-  if (xioctl(m_fd, VIDIOC_QUERYCAP, &m_caps) < 0)
+-    {
+-      cerr << __FUNCTION__ << ": ioctl(VIDIOC_QUERYCAP) failed: "
+-           << strerror(errno) << endl;
+-      return false;
+-    }
+-  
+-  if (m_debugging)
+-    {
+-      cerr << "Driver: " << m_caps.driver << endl;
+-      cerr << "Device: "  << m_caps.card << endl;
+-      cerr << "Caps  : 0x" << std::hex << m_caps.capabilities << std::dec
+-           << endl;
+-    }
+-
+-  // see if capturing is supported
+-  if (!(m_caps.capabilities & V4L2_CAP_VIDEO_CAPTURE))
+-    {
+-      cerr << __FUNCTION__ << ": Device does not support video capture"
+-           << endl;
+-      return false;
+-    }
+-
+-  if (!(m_caps.capabilities & V4L2_CAP_STREAMING))
+-    {
+-      cerr << __FUNCTION__ << ": Device does not support streaming I/O"
+-           << endl;
+-      return false;
+-    }
+-
+-  return true;
+-}
+-
+-bool VCAP::setResolution(int width, int height)
+-{
+-  // in case we already created one
+-  releaseBuffer();
+-
+-  m_width = width;
+-  m_height = height;
+-
+-  m_format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+-  // initialize with the current format
+-  if (xioctl(m_fd, VIDIOC_G_FMT, &m_format) < 0)
+-    {
+-      cerr << __FUNCTION__ << ": ioctl(VIDIOC_G_FMT) failed: "
+-           << strerror(errno) << endl;
+-      return false;
+-    }
+-
+-  // make our changes...
+-  m_format.fmt.pix.width = m_width;
+-  m_format.fmt.pix.height = m_height;
+-  m_format.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
+-  m_format.fmt.pix.field = V4L2_FIELD_ANY;
+-        
+-  if (xioctl(m_fd, VIDIOC_S_FMT, &m_format) < 0)
+-    {
+-      cerr << __FUNCTION__ << ": ioctl(VIDIOC_S_FMT) failed: "
+-           << strerror(errno) << endl;
+-
+-      // If it's just busy, then this still might work, so don't fail here
+-      if (errno != EBUSY)
+-        return false;
+-    }
+-
+-  // Now retrieve the driver's selected format and check it -
+-  // specifically, the width and height might change, causing
+-  // coredumps if we don't adjust them accordingly.
+-
+-  if (xioctl(m_fd, VIDIOC_G_FMT, &m_format) < 0)
+-    {
+-      cerr << __FUNCTION__ << ": ioctl(VIDIOC_G_FMT) failed: "
+-           << strerror(errno) << endl;
+-      return false;
+-    }
+-
+-  // G_FMT will have adjusted these if neccessary, so verify
+-  if (static_cast<int>(m_format.fmt.pix.width) != m_width)
+-    {
+-      if (m_debugging)
+-        cerr << __FUNCTION__ << ": Warning: Selected width "
+-             << std::to_string(m_width)
+-             << " adjusted by driver to "
+-             << std::to_string(m_format.fmt.pix.width)
+-             << endl;
+-
+-      m_width = m_format.fmt.pix.width;
+-    }
+-  
+-  if (static_cast<int>(m_format.fmt.pix.height) != m_height)
+-    {
+-      if (m_debugging)
+-        cerr << __FUNCTION__ << ": Warning: Selected height "
+-             << std::to_string(m_height)
+-             << " adjusted by driver to "
+-             << std::to_string(m_format.fmt.pix.height)
+-             << endl;
+-
+-      m_height = m_format.fmt.pix.height;
+-    }
+-
+-  // now alloc the buffers here
+-  if (!allocBuffer())
+-    return false;
+-
+-  return true;
+-}
+- 
+-bool VCAP::allocBuffer()
+-{
+-  struct v4l2_requestbuffers rb;
+-  memset(&rb, 0, sizeof(rb));
+-
+-  // we just want one buffer, and we only support mmap().
+-  rb.count = 1;
+-  rb.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+-  rb.memory = V4L2_MEMORY_MMAP;
+- 
+-  if (xioctl(m_fd, VIDIOC_REQBUFS, &rb) < 0)
+-    {
+-      if (errno == EINVAL)
+-        {
+-          cerr << __FUNCTION__ << ": Capture device does not support mmapped "
+-               << "buffers"
+-               << endl;
+-        }
+-      cerr << __FUNCTION__ << ": ioctl(VIDIOC_REQBUFS) failed: "
+-           << strerror(errno) << endl;
+-      
+-      return false;
+-    }
+- 
+-  // get the buffer and mmap it
+-  struct v4l2_buffer mbuf;
+-  memset(&mbuf, 0, sizeof(mbuf));
+-
+-  mbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+-  mbuf.memory = V4L2_MEMORY_MMAP;
+-  mbuf.index = 0;
+-
+-  if (xioctl(m_fd, VIDIOC_QUERYBUF, &mbuf) < 0)
+-    {
+-      cerr << __FUNCTION__ << ": ioctl(VIDIOC_QUERYBUF) failed: "
+-           << strerror(errno) << endl;
+-      return false;
+-    }
+- 
+-  // map it
+-  m_buffer = (unsigned char *)mmap(NULL, mbuf.length, 
+-                                   PROT_READ | PROT_WRITE, MAP_SHARED, 
+-                                   m_fd, mbuf.m.offset);
+-
+-  if (m_buffer == MAP_FAILED)
+-    {
+-      cerr << __FUNCTION__ << ": mmap() failed: "
+-           << strerror(errno) << endl;
+-      return false;
+-    }
+-
+-  // we'll need this when unmapping
+-  m_bufferLen = mbuf.length;
+-  
+-  return true;
+-}
+-
+-void VCAP::releaseBuffer()
+-{
+-  // first unmap any buffers
+-  if (m_buffer)
+-    munmap(m_buffer, m_bufferLen);
+-
+-  m_buffer = 0;
+-  m_bufferLen = 0;
+-
+-  // then, tell the kernel driver to free any allocated buffer(s)...
+-  struct v4l2_requestbuffers rb;
+-  memset(&rb, 0, sizeof(rb));
+-
+-  rb.count = 0;
+-  rb.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+-  rb.memory = V4L2_MEMORY_MMAP;
+- 
+-  if (xioctl(m_fd, VIDIOC_REQBUFS, &rb) < 0)
+-    {
+-      cerr << __FUNCTION__ << ": ioctl(VIDIOC_REQBUFS) failed while freeing: "
+-           << strerror(errno) << endl;
+-    }
+-
+-  // reset captured flag
+-  m_imageCaptured = false;
+-}
+-
+-
+-bool VCAP::YUYV2JPEG(FILE *file)
+-{
+-  struct jpeg_compress_struct jpgInfo;
+-  struct jpeg_error_mgr jerr;
+-  JSAMPROW row_pointer[1];
+-  unsigned char *row_buffer = NULL;
+-  unsigned char *yuyv = NULL;
+-  int z;
+-
+-  row_buffer = (unsigned char *)calloc(m_width * 3, 1);
+-  if (!row_buffer)
+-    {
+-      cerr << __FUNCTION__ << ": allocation of line buffer failed."
+-           << endl;
+-      return false;
+-    }
+-
+-  yuyv = m_buffer;
+-
+-  jpgInfo.err = jpeg_std_error(&jerr);
+-  jpeg_create_compress(&jpgInfo);
+-  jpeg_stdio_dest(&jpgInfo, file);
+-
+-  jpgInfo.image_width = m_width;
+-  jpgInfo.image_height = m_height;
+-
+-  // components R, G, B
+-  jpgInfo.input_components = 3;
+-  jpgInfo.in_color_space = JCS_RGB;
+-
+-  jpeg_set_defaults(&jpgInfo);
+-  jpeg_set_quality(&jpgInfo, m_jpgQuality, TRUE);
+-
+-  jpeg_start_compress(&jpgInfo, TRUE);
+-
+-  z = 0;
+-
+-  while (jpgInfo.next_scanline < jpgInfo.image_height)
+-    {
+-      int x;
+-      unsigned char *ptr = row_buffer;
+-      
+-      for (x = 0; x < m_width; x++)
+-        {
+-          int r, g, b;
+-          int y, u, v;
+-          
+-          if (!z)
+-            y = yuyv[0] << 8;
+-          else
+-            y = yuyv[2] << 8;
+-          u = yuyv[1] - 128;
+-          v = yuyv[3] - 128;
+-          
+-          r = (y + (359 * v)) >> 8;
+-          g = (y - (88 * u) - (183 * v)) >> 8;
+-          b = (y + (454 * u)) >> 8;
+-          
+-          *(ptr++) = CLAMP(r, 0, 255);
+-          *(ptr++) = CLAMP(g, 0, 255);
+-          *(ptr++) = CLAMP(b, 0, 255);
+-          
+-          if (z++)
+-            {
+-              z = 0;
+-              yuyv += 4;
+-            }
+-        }
+-      
+-      row_pointer[0] = row_buffer;
+-      jpeg_write_scanlines(&jpgInfo, row_pointer, 1);
+-    }
+-
+-  jpeg_finish_compress(&jpgInfo);
+-  jpeg_destroy_compress(&jpgInfo);
+-
+-  free(row_buffer);
+-
+-  return true;
+-}
+-
+-bool VCAP::saveImage(string filename)
+-{
+-  // check m_buffer to make sure we have an actual buffer... If not,
+-  // we throw here.
+-  if (!m_buffer)
+-    {
+-      throw std::runtime_error(std::string(__FUNCTION__) +
+-                               ": no buffer.  Call setResolution() first");
+-    }
+-
+-  // if we haven't done at least one capture yet...
+-  if (!m_imageCaptured)
+-    {
+-      throw std::runtime_error(std::string(__FUNCTION__) +
+-                               ": No data, call captureImage() first");
+-    }
+-
+-  FILE *file;
+-  if ((file = fopen(filename.c_str(), "wb")) == NULL)
+-    {
+-      cerr << __FUNCTION__ << ": fopen() failed: "
+-           << strerror(errno) << endl;
+-      return false;
+-    }
+-  
+-  YUYV2JPEG(file);
+-  fclose(file);
+-
+-  if (m_debugging)
+-    cerr << __FUNCTION__ << ": Saved image to " << filename << endl;
+-
+-  return true;
+-}
+-
+-bool VCAP::captureImage()
+-{
+-  // first, make sure a resolution was specified.  If not, set the
+-  // default
+-  if (m_width == 0 || m_height == 0)
+-    {
+-      if (!setResolution(VCAP_DEFAULT_WIDTH, VCAP_DEFAULT_HEIGHT))
+-        throw std::runtime_error(std::string(__FUNCTION__) +
+-                                 ": setResolution() failed");
+-    }
+-
+-  // we basically just call doCaptureImage() twice - once to grab and
+-  // discard the first frame (which is usually a remnent of a previous
+-  // capture), and another to grab the real frame we are interesed in.
+-
+-  if (!doCaptureImage())
+-    {
+-      cerr << __FUNCTION__ << ": capture of first frame failed"
+-           << endl;
+-    }
+-
+-  return doCaptureImage();
+-}
+-
+-
+-// the real workhorse
+-bool VCAP::doCaptureImage()
+-{
+-  struct v4l2_buffer buf = {0};
+-  buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+-  buf.memory = V4L2_MEMORY_MMAP;
+-  buf.index = 0;
+-
+-  // queue our buffer
+-  if (xioctl(m_fd, VIDIOC_QBUF, &buf) < 0)
+-    {
+-      cerr << __FUNCTION__ << ": ioctl(VIDIOC_QBUF) failed: "
+-           << strerror(errno) << endl;
+-
+-      return false;
+-    }
+-  
+-  // enable streaming
+-  if (xioctl(m_fd, VIDIOC_STREAMON, &buf.type) < 0)
+-    {
+-      cerr << __FUNCTION__ << ": ioctl(VIDIOC_STREAMON) failed: "
+-           << strerror(errno) << endl;
+-
+-      return false;
+-    }
+-
+-  // use select to wait for a complete frame.
+-  fd_set fds;
+-
+-  FD_ZERO(&fds);
+-  FD_SET(m_fd, &fds);
+-
+-  struct timeval tv;
+-  memset(&tv, 0, sizeof(tv));
+-
+-  // 5 seconds should be more than enough
+-  tv.tv_sec = 5;
+-
+-  int rv;
+-  if ((rv = select(m_fd + 1, &fds, NULL, NULL, &tv)) < 0)
+-    {
+-      cerr << __FUNCTION__ << ": select() failed: "
+-           << strerror(errno) << endl;
+-      return false;
+-    }
+-
+-  if (!rv)
+-    {
+-      // timed out
+-      cerr << __FUNCTION__ << ": select() timed out waiting for frame"
+-           << endl;
+-
+-      return false;
+-    }
+-
+-  // de-queue the buffer, we're now free to access it via the mmapped
+-  // ptr (m_buffer)
+-  if (xioctl(m_fd, VIDIOC_DQBUF, &buf) < 0)
+-    {
+-      cerr << __FUNCTION__ << ": ioctl(VIDIOC_DQBUF) failed: "
+-           << strerror(errno) << endl;
+-
+-      return false;
+-    }
+-
+-  // turn off streaming
+-  if (xioctl(m_fd, VIDIOC_STREAMOFF, &buf.type) < 0)
+-    {
+-      cerr << __FUNCTION__ << ": ioctl(VIDIOC_STREAMOFF) failed: "
+-           << strerror(errno) << endl;
+-
+-      return false;
+-    }
+-    
+-  m_imageCaptured = true;
+-
+-  return true;
+-}
+-
+- void VCAP::setJPGQuality(unsigned int qual)
+- {
+-   m_jpgQuality = CLAMP(qual, 0, 100);
+- }
+diff --git a/src/vcap/vcap.hpp b/src/vcap/vcap.hpp
+deleted file mode 100644
+index 482b22b..0000000
+--- a/src/vcap/vcap.hpp
++++ /dev/null
+@@ -1,215 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2016 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-#pragma once
+-
+-#include <string>
+-#include <iostream>
+-
+-#include <errno.h>
+-#include <fcntl.h>
+-#include <sys/ioctl.h>
+-#include <sys/mman.h>
+-#include <jpeglib.h>
+-#include <linux/videodev2.h>
+-
+-#define VCAP_DEFAULT_VIDEODEV "/dev/video0"
+-#define VCAP_DEFAULT_OUTPUTFILE "vcap.jpg"
+-#define VCAP_DEFAULT_WIDTH 640
+-#define VCAP_DEFAULT_HEIGHT 480
+-#define VCAP_DEFAULT_JPEG_QUALITY 99
+-
+-namespace upm {
+-    /**
+-     * @brief Video Frame Capture and JPEG Image Save Library
+-     *
+-     * Take a snapshot from a USB video camera and save as a JPEG
+-     *
+-     * @defgroup vcap libupm-vcap
+-     * @ingroup video
+-     */
+-
+-    /**
+-     * @library vcap
+-     * @sensor vcap
+-     * @comname Video Frame Capture and Image Save Utility
+-     * @type video
+-     *
+-     * @brief API for the Video Capture driver
+-     *
+-     * This UPM module captures a still frame from a Linux V4L device,
+-     * such as a USB webcam, and and then allows you to save it as a
+-     * JPEG image into a file.
+-     *
+-     * The camera and driver in use must support streaming, mmap-able
+-     * buffers and must provide data in YUYV format.  This should
+-     * encompass most video cameras out there.  It has been tested
+-     * with a few off the shelf cameras without any problems.
+-     *
+-     * @snippet vcap.cxx Interesting
+-     */
+-
+-  class VCAP {
+-  public:
+-
+-    /**
+-     * VCAP object constructor
+-     *
+-     * @param videoDev The path to the video device, default is /dev/video0.
+-     */
+-    VCAP(std::string videoDev=VCAP_DEFAULT_VIDEODEV);
+-
+-    /**
+-     * VCAP object destructor
+-     */
+-    ~VCAP();
+-
+-    /**
+-     * Set the desired resolution of the output image.  Note, this is
+-     * a hint to the underlying video driver.  The video driver is
+-     * free to lower the specified resolution if the hardware cannot
+-     * support it.  You can use getHeight() and getWidth() after
+-     * calling this method to see what the video driver chose.
+-     *
+-     * @param width The desired width of the image.
+-     * @param width The desired height of the image.
+-     * @return true if the operation succeeded, false otherwise.
+-     */
+-    bool setResolution(int width, int height);
+-
+-    /**
+-     * Capture an image from the camera.
+-     *
+-     * @return true if the operation succeeded, false otherwise.
+-     */
+-    bool captureImage();
+-
+-    /**
+-     * Save the captured image (created with captureImage()) to a file
+-     * in JPEG format.  The file will be overwritten if it already
+-     * exists.
+-     *
+-     * @param filename The name of the file in which to store the image.
+-     * @return true if the operation succeeded, false otherwise.
+-     */
+-    bool saveImage(std::string filename=VCAP_DEFAULT_OUTPUTFILE);
+-
+-    /**
+-     * Return the current width of the image.  You can use this method
+-     * to determine if the video driver downgraded it after a call to
+-     * setResolution().
+-     *
+-     * @return true Current width of capture.
+-     */
+-    int getWidth() const
+-    {
+-      return m_width;
+-    };
+-
+-    /**
+-     * Return the current height of the image.  You can use this method
+-     * to determine if the video driver downgraded it after a call to
+-     * setResolution().
+-     *
+-     * @return true Current height of capture.
+-     */
+-    int getHeight() const
+-    {
+-      return m_height;
+-    };
+-
+-    /**
+-     * Set the JPEG quality.
+-     *
+-     * @param quality A number between 0-100, with higher numbers
+-     * meaning higher quality. Numbers less than 0 will be clamped to
+-     * 0, numbers higher than 100 will be clamped to 100.
+-     */
+-    void setJPGQuality(unsigned int quality);
+-
+-    /**
+-     * Get the current JPEG quality setting.
+-     *
+-     * @return the current JPEG quality setting.
+-     */
+-    int getJPGQuality() const
+-    {
+-      return m_jpgQuality;
+-    };
+-
+-    /**
+-     * Enable or disable debugging output.
+-     *
+-     * @param enable true to enable debugging, false otherwise
+-     */
+-    void setDebug(bool enable)
+-    {
+-      m_debugging = enable;
+-    };
+-
+-  protected:
+-    // open the device and check that it meats minimum requirements
+-    bool initVideoDevice();
+-
+-    // make sure device is streamable, supports mmap and capture
+-    bool checkCapabilities();
+-
+-    // read the mmapped buffer in YUYV format and create a jpeg image
+-    bool YUYV2JPEG(FILE *file);
+-
+-    // buffer management
+-    bool allocBuffer();
+-    void releaseBuffer();
+-
+-    // does the actual capture
+-    bool doCaptureImage();
+-
+-  private:
+-    // internal ioctl
+-    int xioctl(int fd, int request, void* argp);
+-
+-    std::string m_videoDevice;
+-
+-    // our file descriptor to the video device
+-    int m_fd;
+-
+-    // v4l info
+-    struct v4l2_capability m_caps;
+-    struct v4l2_format m_format;
+-
+-    // our mmaped buffer
+-    unsigned char *m_buffer;
+-    size_t m_bufferLen;
+-
+-    // the resolution and quality
+-    int m_width;
+-    int m_height;
+-    int m_jpgQuality;
+-
+-    // at least one image captured with current settings?
+-    bool m_imageCaptured;
+-
+-    // are we debugging?
+-    bool m_debugging;
+-  };
+-}
+diff --git a/src/vcap/vcap.i b/src/vcap/vcap.i
+deleted file mode 100644
+index f7f5bff..0000000
+--- a/src/vcap/vcap.i
++++ /dev/null
+@@ -1,14 +0,0 @@
+-%include "../common_top.i"
+-
+-/* BEGIN Java syntax  ------------------------------------------------------- */
+-#ifdef SWIGJAVA
+-JAVA_JNI_LOADLIBRARY(javaupm_vcap)
+-#endif
+-/* END Java syntax */
+-
+-/* BEGIN Common SWIG syntax ------------------------------------------------- */
+-%{
+-#include "vcap.hpp"
+-%}
+-%include "vcap.hpp"
+-/* END Common SWIG syntax */
+diff --git a/src/vcap/vcap.json b/src/vcap/vcap.json
+deleted file mode 100644
+index c190bdc..0000000
+--- a/src/vcap/vcap.json
++++ /dev/null
+@@ -1,24 +0,0 @@
+-{
+-    "Library": "vcap",
+-    "Description": "Take a snapshot from a video camera and save as a JPEG",
+-    "Sensor Class": {
+-        "VCAP": {
+-            "Name": "API for the Video Capture driver",
+-            "Description": "This is the UPM Module for the Video Capture driver. This UPM module captures a still frame from a Linux V4L device, such as a USB webcam, and and then allows you to save it as a JPEG image into a file. The camera and driver in use must support streaming, mmap-able buffers and must provide data in YUYV format.  This should encompass most video cameras out there.  It has been tested with a few off the shelf cameras without any problems.",
+-            "Aliases": ["vcap"],
+-            "Categories": ["video"],
+-            "Connections": ["other"],
+-            "Project Type": ["medical", "industrial", "commercial", "prototyping"],
+-            "Manufacturers": ["other"],
+-            "Examples": {
+-                "Java": ["VCAP_Example.java"],
+-                "Python": ["vcap.py"],
+-                "Node.js": ["vcap.js"],
+-                "C++": ["vcap.cxx"]
+-            },
+-            "Urls": {
+-                "Product Pages": ["https://github.com/intel-iot-devkit/upm/tree/master/src/vcap"]
+-            }
+-        }
+-    }
+-}
+diff --git a/src/vdiv/CMakeLists.txt b/src/vdiv/CMakeLists.txt
+deleted file mode 100644
+index cd83146..0000000
+--- a/src/vdiv/CMakeLists.txt
++++ /dev/null
+@@ -1,8 +0,0 @@
+-upm_mixed_module_init (NAME vdiv
+-    DESCRIPTION "Analog Voltage Divider Sensor"
+-    C_HDR vdiv.h
+-    C_SRC vdiv.c
+-    CPP_HDR vdiv.hpp
+-    CPP_SRC vdiv.cxx
+-    FTI_SRC vdiv_fti.c
+-    REQUIRES mraa)
+diff --git a/src/vdiv/vdiv.c b/src/vdiv/vdiv.c
+deleted file mode 100644
+index c929eaf..0000000
+--- a/src/vdiv/vdiv.c
++++ /dev/null
+@@ -1,130 +0,0 @@
+-/*
+- * Author: Noel Eck <noel.eck@intel.com>
+- * Copyright (c) 2015 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#include <string.h>
+-#include <stdlib.h>
+-
+-#include "vdiv.h"
+-
+-vdiv_context vdiv_init(int16_t pin, float voltage_ref)
+-{
+-    // make sure MRAA is initialized
+-    int mraa_rv;
+-    if ((mraa_rv = mraa_init()) != MRAA_SUCCESS)
+-    {
+-        printf("%s: mraa_init() failed (%d).\n", __FUNCTION__, mraa_rv);
+-        return NULL;
+-    }
+-
+-    vdiv_context dev = (vdiv_context)malloc(sizeof(struct _vdiv_context));
+-
+-    if (dev == NULL) return NULL;
+-
+-    /* Init aio pin */
+-    dev->aio = mraa_aio_init(pin);
+-
+-    if (dev->aio == NULL) {
+-        free(dev);
+-        return NULL;
+-    }
+-
+-    /* Set defaults */
+-    dev->m_aRef = 5.0;
+-    dev->m_scale = 1.0;
+-    dev->m_offset = 0.0;
+-    dev->m_vdiv_sw = 3;
+-
+-    return dev;
+-}
+-
+-void vdiv_close(vdiv_context dev)
+-{
+-    mraa_aio_close(dev->aio);
+-    free(dev);
+-}
+-
+-upm_result_t vdiv_set_scale(const vdiv_context dev, float scale)
+-{
+-    dev->m_scale = scale;
+-    return UPM_SUCCESS;
+-}
+-
+-upm_result_t vdiv_set_offset(const vdiv_context dev, float offset)
+-{
+-    dev->m_offset = offset;
+-    return UPM_SUCCESS;
+-}
+-
+-float vdiv_get_scale(const vdiv_context dev)
+-{
+-    return dev->m_scale;
+-}
+-
+-float vdiv_get_offset(const vdiv_context dev)
+-{
+-    return dev->m_offset;
+-}
+-
+-upm_result_t vdiv_set_divsw(const vdiv_context dev, int vdiv_sw)
+-{
+-    dev->m_vdiv_sw = vdiv_sw;
+-    return UPM_SUCCESS;
+-}
+-
+-int vdiv_get_divsw(const vdiv_context dev)
+-{
+-    return dev->m_vdiv_sw;
+-}
+-
+-upm_result_t vdiv_get_raw_volts(const vdiv_context dev, float *value)
+-{
+-    *value = mraa_aio_read_float(dev->aio);
+-    if (*value < 0)
+-        return UPM_ERROR_OPERATION_FAILED;
+-
+-    /* Scale by the ADC reference voltage */
+-    *value *= dev->m_aRef;
+-
+-    return UPM_SUCCESS;
+-}
+-
+-upm_result_t vdiv_get_computed_volts(const vdiv_context dev, float *value)
+-{
+-    // JET - this is wrong.
+-
+-    *value = mraa_aio_read_float(dev->aio);
+-    if (*value < 0)
+-        return UPM_ERROR_OPERATION_FAILED;
+-
+-     /* Apply raw scale */
+-    *value *= dev->m_scale;
+-
+-    /* Scale to the ADC referecen then to vdiv gain */
+-    *value *= dev->m_aRef * dev->m_vdiv_sw;
+-
+-    /* Apply the offset in volts */
+-    *value += dev->m_offset;
+-
+-    return UPM_SUCCESS;
+-}
+diff --git a/src/vdiv/vdiv.cxx b/src/vdiv/vdiv.cxx
+deleted file mode 100644
+index 867cf66..0000000
+--- a/src/vdiv/vdiv.cxx
++++ /dev/null
+@@ -1,68 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2014 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#include <iostream>
+-#include <string>
+-#include <stdexcept>
+-
+-#include "vdiv.hpp"
+-
+-using namespace upm;
+-using namespace std;
+-
+-VDiv::VDiv(int pin)
+-{
+-  if ( !(m_aio = mraa_aio_init(pin)) )
+-    {
+-      throw std::invalid_argument(std::string(__FUNCTION__) +
+-                                  ": mraa_aio_init() failed, invalid pin?");
+-      return;
+-    }
+-}
+-
+-VDiv::~VDiv()
+-{
+-  mraa_aio_close(m_aio);
+-}
+-
+-unsigned int VDiv::value(unsigned int samples)
+-{
+-  int sum = 0;
+-
+-  for (unsigned int i=0; i<samples; i++)
+-    {
+-      sum += mraa_aio_read(m_aio);
+-      if (sum == -1) return 0;
+-      usleep(2000);
+-    }
+-        
+-  return (sum / samples);
+-}
+-
+-float VDiv::computedValue(uint8_t gain, unsigned int val, int vref, int res)
+-{
+-  return ((float(gain) * float(val) * float(vref) / float(res)) / 1000.0);
+-
+-}
+-
+diff --git a/src/vdiv/vdiv.h b/src/vdiv/vdiv.h
+deleted file mode 100644
+index 2607884..0000000
+--- a/src/vdiv/vdiv.h
++++ /dev/null
+@@ -1,147 +0,0 @@
+-/*
+- * Author: Noel Eck <noel.eck@intel.com>
+- * Copyright (c) 2015 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#pragma once
+-
+-#include "upm.h"
+-#include "mraa/aio.h"
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-/**
+- * @file vdiv.h
+- * @library vdiv
+- * @brief C API for Voltage Dividers
+- *
+- * @include vdiv.c
+- */
+-
+-/**
+- * device context
+- */
+-typedef struct _vdiv_context {
+-    /* mraa aio pin context */
+-    mraa_aio_context aio;
+-    /* ADC voltage reference */
+-    float m_aRef;
+-    /* Scale */
+-    float m_scale;
+-    /* Offset in sensor units */
+-    float m_offset;
+-    /* Offset in sensor units */
+-    int m_vdiv_sw;
+-} *vdiv_context;
+-
+-
+-/**
+- * Initialize analog sensor
+- * @param pin is Analog pin
+- * @return sensor context as void pointer
+- */
+-vdiv_context vdiv_init(int16_t pin, float voltage_ref);
+-
+-/**
+- * Analog sensor destructor
+- * @param sensor context pointer deallocate memory
+- */
+-void vdiv_close(vdiv_context dev);
+-
+-/**
+- * Set sensor scale.  This scale is applied to the return value:
+- *     counts = counts * scale
+- * @param dev sensor context pointer
+- * @param scale count scale value used
+- * @return Function result code
+- */
+-upm_result_t vdiv_set_scale(const vdiv_context dev, float scale);
+-
+-/**
+- * Set sensor offset.  This offset is applied to the return value:
+- *     counts = counts + offset
+- * @param dev sensor context pointer
+- * @param offset count offset value used
+- * @return Function result code
+- */
+-upm_result_t vdiv_set_offset(const vdiv_context dev, float offset);
+-
+-/**
+- * Get sensor scale
+- * @param dev sensor context pointer
+- * @return Sensor scale
+- */
+-float vdiv_get_scale(const vdiv_context dev);
+-
+-/**
+- * Get sensor offset
+- * @param dev sensor context pointer
+- * @return Sensor offset
+- */
+-float vdiv_get_offset(const vdiv_context dev);
+-
+-/**
+- * Set sensor divide switch value
+- * @param dev sensor context pointer
+- * @param vdiv_sw Divide switch value
+- * @return Function result code
+- */
+-upm_result_t vdiv_set_divsw(const vdiv_context dev, int vdiv_sw);
+-
+-/**
+- * Get divide switch value
+- * @param dev sensor context pointer
+- * @return Sensor divide switch value
+- */
+-int vdiv_get_divsw(const vdiv_context dev);
+-
+-/**
+- * Read raw voltage from the sensor
+- * @param dev sensor context pointer
+- * @param *value Raw sensor voltage
+- * @return Function result code
+- */
+-upm_result_t vdiv_get_raw_volts(const vdiv_context dev, float *value);
+-
+-/**
+- * Gets the true voltage value from the sensor.  Voltage divides by 3 or 10,
+- * depending on the toggle switch on the board.  The dynamic range of the
+- * vdiv sensor is listed below.
+- * 
+- *  ADC Ref  SW   max VOL in
+- *  ------- ---   ----------
+- *    3.3v    3       8.5v
+- *    3.3v   10      28.4v
+- *    5.0v    3      12.9v
+- *    5.0v   10      43.0v
+- *
+- * @param dev sensor context pointer
+- * @param *value Voltage (v)
+- * @return Function result code
+- */
+-upm_result_t vdiv_get_computed_volts(const vdiv_context dev, float *value);
+-
+-#ifdef __cplusplus
+-}
+-#endif
+diff --git a/src/vdiv/vdiv.hpp b/src/vdiv/vdiv.hpp
+deleted file mode 100644
+index f04b7f3..0000000
+--- a/src/vdiv/vdiv.hpp
++++ /dev/null
+@@ -1,99 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2014 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-#pragma once
+-
+-#include <string>
+-#include <iostream>
+-#include <stdint.h>
+-#include <mraa/aio.h>
+-
+-// reference voltage in millivolts
+-#define VDIV_VREF  4980
+-
+-// default ADC resolution
+-#define VDIV_ADC_RES 1024
+-
+-namespace upm {
+-  /**
+-   * @brief Voltage Divider Sensor
+-   * @defgroup vdiv libupm-vdiv
+-   * @ingroup seeed analog electric robok
+-   */
+-
+-  /**
+-   * @library vdiv
+-   * @sensor vdiv
+-   * @comname Analog Voltage Divider Sensor
+-   * @altname Grove Voltage Divider
+-   * @type electric
+-   * @man seeed
+-   * @con analog
+-   * @kit robok
+-   *
+-   * @brief API for the Voltage Divider Sensor
+-   *
+-   * UPM module for the Voltage Divider sensor
+-   *
+-   * @image html vdiv.jpg
+-   * @snippet vdiv.cxx Interesting
+-   */
+-  class VDiv {
+-  public:
+-    /**
+-     * Voltage Divider sensor constructor
+-     *
+-     * @param pin Analog pin to use
+-     */
+-    VDiv(int pin);
+-
+-    /**
+-     * Voltage Divider destructor
+-     */
+-    ~VDiv();
+-
+-    /**
+-     * Gets the conversion value from the sensor
+-     *
+-     * @param samples Specifies how many samples to average over
+-     * @return Average ADC conversion value
+-     */
+-    unsigned int value(unsigned int samples);
+-
+-    /**
+-     * Computes the measured voltage
+-     *
+-     * @param gain Gain switch, example: either 3 or 10 grove vdiv
+-     * @param val Measured voltage (from value())
+-     * @param vref Reference voltage in millivolts
+-     * @param res ADC resolution
+-     *
+-     * @return Measured voltage
+-     */
+-    float computedValue(uint8_t gain, unsigned int val, int vref=VDIV_VREF,
+-                        int res=VDIV_ADC_RES);
+-
+-  private:
+-    mraa_aio_context m_aio;
+-  };
+-}
+diff --git a/src/vdiv/vdiv.json b/src/vdiv/vdiv.json
+deleted file mode 100644
+index 945e0c5..0000000
+--- a/src/vdiv/vdiv.json
++++ /dev/null
+@@ -1,70 +0,0 @@
+-{
+-    "Library": "vdiv",
+-    "Description": "Grove Voltage Divider Sensor Library",
+-    "Sensor Class": {
+-        "vdiv": {
+-            "Name": "API for the Grove Voltage Divider Sensor",
+-            "Description": "This is the UPM Module for the Grove Voltage Divider Sensor. The Grove – Voltage Divider provides an interface for measuring extern voltage, eliminating the need to connect a resistance to input interface. Besides, The voltage gain can select by dial switch.They are easy to use.",
+-            "Aliases": ["vdiv", "Grove - Voltage Divider", "LMV3xx"],
+-            "Categories": ["electric"],
+-            "Connections": ["analog"],
+-            "Project Type": ["prototyping"],
+-            "Manufacturers": ["Seeed", "Texas Instruments"],
+-            "Kits": ["robok"],
+-            "Image": "vdiv.jpg",
+-            "Examples": {
+-                "Java": ["VDiv_Example.java"],
+-                "Python": ["vdiv.py"],
+-                "Node.js": ["vdiv.js"],
+-                "C++": ["vdiv.cxx"],
+-                "C": ["vdiv.c"]
+-            },
+-            "Specifications": {
+-                "Vsource": {
+-                    "unit": "V",
+-                    "min": 4.7,
+-                    "max": 5.3
+-                },
+-                "Supply Current": {
+-                    "unit": "uA",
+-                    "min" : 130,
+-                    "max" : 410
+-                },
+-                "Operating Temperature": {
+-                    "unit": "°C",
+-                    "min": -40,
+-                    "max": 125
+-                },
+-                "Accuracy": {
+-                    "unit": "%",
+-                    "typ": "<=1"
+-                },
+-                "External Voltage Range": {
+-                    "Gain 3": {
+-                        "unit": "V",
+-                        "min" : 0.3,
+-                        "max" : 12.9
+-                    },
+-                    "Gain 10": {
+-                        "unit": "V",
+-                        "min" : 1,
+-                        "max" : 43
+-                    }
+-                }
+-            },
+-            "Platforms": {
+-                "Intel Edison": {
+-                    "Notes": ["Might need Grove base shield"]
+-                },
+-                "Arduino 101": {
+-                    "Notes": ["Might need Grove base shield"]
+-                }
+-            },
+-            "Urls": {
+-                "Product Pages": ["https://www.seeedstudio.com/Grove-Voltage-Divider-p-1472.html", "http://wiki.seeed.cc/Grove-Voltage_Divider/"],
+-                "Datasheets": ["https://github.com/SeeedDocument/Grove-Voltage_Divider/raw/master/res/LMV358ID_Datasheet.pdf"],
+-                "Schematics": ["https://github.com/SeeedDocument/Grove-Voltage_Divider/raw/master/res/Grove-Voltage_Divider_Eagle_File.zip"]
+-            }
+-        }
+-    }
+-}
+\ No newline at end of file
+diff --git a/src/vdiv/vdiv_fti.c b/src/vdiv/vdiv_fti.c
+deleted file mode 100644
+index 1138461..0000000
+--- a/src/vdiv/vdiv_fti.c
++++ /dev/null
+@@ -1,118 +0,0 @@
+-/*
+- * Author: Noel Eck <noel.eck@intel.com>
+- * Copyright (c) 2015 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#include <string.h>
+-#include <stdlib.h>
+-
+-#include "vdiv.h"
+-#include "fti/upm_sensor.h"
+-#include "fti/upm_voltage.h"
+-
+-/** 
+- * This file implements the Function Table Interface (FTI) for this sensor
+- */
+-
+-const char upm_vdiv_name[] = "VDIV";
+-const char upm_vdiv_description[] = "Analog voltage divider sensor";
+-const upm_protocol_t upm_vdiv_protocol[] = {UPM_ANALOG};
+-const upm_sensor_t upm_vdiv_category[] = {UPM_VOLTAGE};
+-
+-// forward declarations
+-const void* upm_vdiv_get_ft(upm_sensor_t sensor_type);
+-void* upm_vdiv_init_str(const char* protocol, const char* params);
+-void upm_vdiv_close(void* dev);
+-const upm_sensor_descriptor_t upm_vdiv_get_descriptor();
+-upm_result_t upm_vdiv_set_offset(const void* dev, float offset);
+-upm_result_t upm_vdiv_set_scale(const void* dev, float scale);
+-upm_result_t upm_vdiv_get_value(const void* dev, float *value);
+-
+-/* This sensor implementes 2 function tables */
+-/* 1. Generic base function table */
+-static const upm_sensor_ft ft_gen =
+-{
+-    .upm_sensor_init_name = &upm_vdiv_init_str,
+-    .upm_sensor_close = &upm_vdiv_close,
+-    .upm_sensor_get_descriptor = &upm_vdiv_get_descriptor
+-};
+-
+-/* 2. VOLTAGE function table */
+-static const upm_voltage_ft ft_voltage =
+-{
+-    .upm_voltage_set_offset = &upm_vdiv_set_offset,
+-    .upm_voltage_set_scale = &upm_vdiv_set_scale,
+-    .upm_voltage_get_value = &upm_vdiv_get_value
+-};
+-
+-const void* upm_vdiv_get_ft(upm_sensor_t sensor_type)
+-{
+-    switch(sensor_type)
+-    {
+-        case UPM_SENSOR:
+-            return &ft_gen;
+-        case UPM_VOLTAGE:
+-            return &ft_voltage;
+-        default:
+-            return NULL;
+-    }
+-}
+-
+-void* upm_vdiv_init_str(const char* protocol, const char* params)
+-{
+-    fprintf(stderr, "String initialization - not implemented, using ain0: %s\n", __FILENAME__);
+-    return vdiv_init(0, 5.0);
+-}
+-
+-void upm_vdiv_close(void* dev)
+-{
+-    vdiv_close((vdiv_context)dev);
+-}
+-
+-const upm_sensor_descriptor_t upm_vdiv_get_descriptor()
+-{
+-    /* Fill in the descriptor */
+-    upm_sensor_descriptor_t usd;
+-    usd.name = upm_vdiv_name;
+-    usd.description = upm_vdiv_description;
+-    usd.protocol_size = 1;
+-    usd.protocol = upm_vdiv_protocol;
+-    usd.category_size = 1;
+-    usd.category = upm_vdiv_category;
+-
+-    return usd;
+-}
+-
+-upm_result_t upm_vdiv_set_offset(const void* dev, float offset)
+-{
+-    return vdiv_set_offset((vdiv_context)dev, offset);
+-}
+-
+-upm_result_t upm_vdiv_set_scale(const void* dev, float scale)
+-{
+-    return vdiv_set_scale((vdiv_context)dev, scale);
+-}
+-
+-upm_result_t upm_vdiv_get_value(const void* dev, float *value)
+-{
+-    return vdiv_get_computed_volts((vdiv_context)dev, value);
+-}
+diff --git a/src/veml6070/CMakeLists.txt b/src/veml6070/CMakeLists.txt
+deleted file mode 100644
+index 9ed32a9..0000000
+--- a/src/veml6070/CMakeLists.txt
++++ /dev/null
+@@ -1,8 +0,0 @@
+-upm_mixed_module_init (NAME veml6070
+-    DESCRIPTION "Vishay UV Sensor"
+-    C_HDR veml6070.h
+-    C_SRC veml6070.c
+-    CPP_HDR veml6070.hpp
+-    CPP_SRC veml6070.cxx
+-    CPP_WRAPS_C
+-    REQUIRES mraa)
+diff --git a/src/veml6070/veml6070.c b/src/veml6070/veml6070.c
+deleted file mode 100644
+index 6687814..0000000
+--- a/src/veml6070/veml6070.c
++++ /dev/null
+@@ -1,108 +0,0 @@
+-/*
+- * Author: Abhishek Malik <abhishek.malik@intel.com>
+- * Copyright (c) 2017 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-#include "veml6070.h"
+-
+-veml6070_context veml6070_init(int bus) {
+-    // make sure MRAA is initialized
+-    int mraa_rv;
+-    if ((mraa_rv = mraa_init()) != MRAA_SUCCESS)
+-    {
+-        printf("%s: mraa_init() failed (%d).\n", __FUNCTION__, mraa_rv);
+-        return NULL;
+-    }
+-
+-    veml6070_context dev =
+-      (veml6070_context) malloc(sizeof(struct _veml6070_context));
+-
+-    if (!dev)
+-    {
+-        return NULL;
+-    }
+-
+-    dev->i2c_bus_number = bus;
+-    // Setting up 2 contexts for the 2 addresses
+-    dev->address_seq1 = VEML6070_SEQ1_DATA_BUF_REG;
+-    dev->address_seq2 = VEML6070_SEQ2_DATA_BUF_REG;
+-
+-    dev->i2c_seq1 = mraa_i2c_init(dev->i2c_bus_number);
+-    if (dev->i2c_seq1 == NULL){
+-        free(dev);
+-        return NULL;
+-    }
+-
+-    dev->i2c_seq2 = mraa_i2c_init(dev->i2c_bus_number);
+-    if (dev->i2c_seq2 == NULL){
+-        free(dev);
+-        return NULL;
+-    }
+-
+-    if (mraa_i2c_address(dev->i2c_seq1, dev->address_seq1) != MRAA_SUCCESS)
+-    {
+-        mraa_i2c_stop(dev->i2c_seq1);
+-        free(dev);
+-        return NULL;
+-    }
+-
+-    if (mraa_i2c_address(dev->i2c_seq2, dev->address_seq2) != MRAA_SUCCESS)
+-    {
+-        mraa_i2c_stop(dev->i2c_seq2);
+-        free(dev);
+-        return NULL;
+-    }
+-    // reset the sensor here
+-
+-    return dev;
+-}
+-
+-void veml6070_close(veml6070_context dev) {
+-    free(dev);
+-}
+-
+-int16_t veml6070_get_uv_intensity(veml6070_context dev) {
+-    int8_t seq_1, seq_2;
+-    int16_t intensity;
+-
+-    // reading seq1
+-    seq_1 = mraa_i2c_read_byte(dev->i2c_seq1);
+-    if(seq_1 == -1)
+-        return -1;
+-
+-    // reading seq2
+-    seq_2 = mraa_i2c_read_byte(dev->i2c_seq2);
+-    if (seq_2 == -1)
+-        return -1;
+-
+-    intensity = (seq_1<<8)|seq_2;
+-
+-    return intensity;
+-}
+-
+-upm_result_t veml6070_set_integration_time(veml6070_context dev, veml6070_integration_time_t time) {
+-    uint8_t integrationTime = ((time<<2)|0x02);
+-    if(mraa_i2c_write(dev->i2c_seq2, &integrationTime, 1) != MRAA_SUCCESS) {
+-        return UPM_ERROR_UNSPECIFIED;
+-    }
+-
+-    return UPM_SUCCESS;
+-}
+diff --git a/src/veml6070/veml6070.cxx b/src/veml6070/veml6070.cxx
+deleted file mode 100644
+index 3d46d45..0000000
+--- a/src/veml6070/veml6070.cxx
++++ /dev/null
+@@ -1,55 +0,0 @@
+-/*
+- * Author: Abhishek Malik <abhishek.malik@intel.com>
+- * Copyright (c) 2017 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#include <iostream>
+-#include <string>
+-#include <stdexcept>
+-
+-#include "veml6070.hpp"
+-
+-using namespace upm;
+-
+-VEML6070::VEML6070(int bus) :
+-    m_veml6070(veml6070_init(bus))
+-{
+-    if(!m_veml6070)
+-        throw std::runtime_error(std::string(__FUNCTION__) +
+-                                ": veml6070_init failed");
+-}
+-
+-VEML6070::~VEML6070()
+-{
+-    veml6070_close(m_veml6070);
+-}
+-
+-int VEML6070::getUVIntensity()
+-{
+-    return veml6070_get_uv_intensity(m_veml6070);
+-}
+-
+-void VEML6070::setIntegrationTime(veml6070_integration_time_t time)
+-{
+-    if(veml6070_set_integration_time(m_veml6070, time) != UPM_SUCCESS)
+-        std::cout << "VEML6070 sensor unable to update integration time" << std::endl;
+-}
+diff --git a/src/veml6070/veml6070.h b/src/veml6070/veml6070.h
+deleted file mode 100644
+index 6cb0816..0000000
+--- a/src/veml6070/veml6070.h
++++ /dev/null
+@@ -1,101 +0,0 @@
+-/*
+- * Author: Abhishek Malik <abhishek.malik@intel.com>
+- * Copyright (c) 2017 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-#pragma once
+-
+-#include <stdlib.h>
+-#include <unistd.h>
+-#include <stdio.h>
+-#include <string.h>
+-
+-#include "upm.h"
+-#include "mraa/i2c.h"
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-#define VEML6070_CTRL_REG             0x38    // write only
+-#define VEML6070_SEQ1_DATA_BUF_REG    0x39    // read only
+-#define VEML6070_SEQ2_DATA_BUF_REG    0x38    // read only
+-
+-typedef enum {
+-    HALF_T = 0,
+-    ONE_T,
+-    TWO_T,
+-    FOUR_T } veml6070_integration_time_t;
+-
+-/**
+- * @file veml6070.h
+- * @library veml6070
+- * @brief C API for the VEML6070 Vishay UV Sensor
+- *
+- * @include veml6070.c
+- */
+-
+-typedef struct _veml6070_context {
+-    mraa_i2c_context       i2c_seq1;
+-    mraa_i2c_context       i2c_seq2;
+-    uint8_t                address_seq1;
+-    uint8_t                address_seq2;
+-    int                    i2c_bus_number;
+-} *veml6070_context;
+-
+-/**
+- * VEML6070 Initialization function
+- *
+- * @param bus I2C bus to use
+- * @param address I2C address to use
+- *
+- * @return device context pointer
+- */
+-veml6070_context veml6070_init(int bus);
+-
+-/**
+- * VEML6070 Close function
+- *
+- * @param dev veml6070_context pointer
+- */
+-void veml6070_close(veml6070_context dev);
+-
+-/**
+- * Function to get the UV values
+- *
+- * @param dev veml6070_context pointer
+- * @return int16_t UV value
+- */
+-int16_t veml6070_get_uv_intensity(veml6070_context dev);
+-
+-/**
+- * Function to set the integration time of the sensor
+- *
+- * @param dev veml6070_context pointer
+- * @param time veml6070_integration_time_t
+- *
+- * @return upm_result_t
+- */
+-upm_result_t veml6070_set_integration_time(veml6070_context dev, veml6070_integration_time_t time);
+-
+-#ifdef __cplusplus
+-}
+-#endif
+diff --git a/src/veml6070/veml6070.hpp b/src/veml6070/veml6070.hpp
+deleted file mode 100644
+index 0483117..0000000
+--- a/src/veml6070/veml6070.hpp
++++ /dev/null
+@@ -1,112 +0,0 @@
+-/*
+- * Author: Abhishek Malik <abhishek.malik@intel.com>
+- * Copyright (c) 2017 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+- 
+-#pragma once
+-
+-#include "veml6070.h"
+-
+-namespace upm {
+-/**
+- * @brief VEML6070 UV Sensor
+- * @defgroup veml6070 libupm-veml6070
+- * @ingroup vishay i2c light
+- */
+-
+-/**
+- * @library veml6070
+- * @sensor veml6070
+- * @comname Vishay VEML6070 UV Sensor
+- * @type other
+- * @man Vishay
+- * @web http://www.vishay.com/docs/84277/veml6070.pdf
+- * @con i2c
+- * @kit other
+- *
+- * @brief API for the Vishay VEML6070 UV Sensor
+- *
+- * VEML6070 is an advanced ultraviolet (UV) light sensor with
+- * I2C protocol interface and designed by the CMOS process.
+- * It is easily operated via a simple I2C command. The active
+- * acknowledge (ACK) feature with threshold windows setting
+- * allows the UV sensor to send out a UVI alert message.
+- * Under a strong solar UVI condition, the smart ACK signal
+- * can be easily implemented by the software programming.
+- * VEML6070 incorporates a photodiode, amplifiers, and
+- * analog / digital circuits into a single chip. VEML6070's
+- * adoption of FiltronTM UV technology provides the best
+- * spectral sensitivity to cover UV spectrum sensing. It has an
+- * excellent temperature compensation and a robust refresh
+- * rate setting that does not use an external RC low pass filter.
+- * VEML6070 has linear sensitivity to solar UV light and is
+- * easily adjusted by an external resistor. Software shutdown
+- * mode is provided, which reduces power consumption to be
+- * less than 1 uA. VEML6070's operating voltage ranges from
+- * 2.7 V to 5.5 V.
+- *
+- * @image html veml6070.jpg
+- * @snippet veml6070.cxx Interesting
+- */
+-    class VEML6070 {
+-
+-    public:
+-        /**
+-         * VEML6070 constructor
+-         *
+-         * @param bus i2c bus to be used
+-         * @param devAddress i2c address of the sensor
+-         */
+-        VEML6070(int bus);
+-        /**
+-         * VEML6070 destructor
+-         */
+-        ~VEML6070();
+-
+-        /**
+-         * Function to get the UV value.
+-         *
+-         * @return int16_t UV value
+-         */
+-        int getUVIntensity();
+-
+-        /**
+-         * Function to allow the user to set the intergration time
+-         * for the sensor.
+-         * Integration time:
+-         * Bit Setting   |  Description  |           RSet
+-         *  IT1   IT0    |               | 300 k-ohms | 600 k-ohms
+-         *   0     0     |      1/2T     |   62.5 ms  |   125 ms
+-         *   0     1     |       1T      |   125 ms   |   250 ms
+-         *   1     0     |       2T      |   250 ms   |   500 ms
+-         *   1     1     |       4T      |   500 ms   |  1000 ms
+-         *
+-         * @param time veml6070_integration_time_t
+-         */
+-        void setIntegrationTime(veml6070_integration_time_t time);
+-
+-    private:
+-        veml6070_context m_veml6070;
+-        VEML6070(const VEML6070& src) { /* do not create copied constructor */}
+-        VEML6070& operator=(const VEML6070&) {return *this;}
+-    };
+-}
+diff --git a/src/veml6070/veml6070.i b/src/veml6070/veml6070.i
+deleted file mode 100644
+index a6990fa..0000000
+--- a/src/veml6070/veml6070.i
++++ /dev/null
+@@ -1,14 +0,0 @@
+-%include "../common_top.i"
+-
+-/* BEGIN Java syntax  ------------------------------------------------------- */
+-#ifdef SWIGJAVA
+-JAVA_JNI_LOADLIBRARY(javaupm_veml6070)
+-#endif
+-/* END Java syntax */
+-
+-/* BEGIN Common SWIG syntax ------------------------------------------------- */
+-%{
+-#include "veml6070.hpp"
+-%}
+-%include "veml6070.hpp"
+-/* END Common SWIG syntax */
+diff --git a/src/veml6070/veml6070.json b/src/veml6070/veml6070.json
+deleted file mode 100644
+index 24fc770..0000000
+--- a/src/veml6070/veml6070.json
++++ /dev/null
+@@ -1,55 +0,0 @@
+-{
+-    "Library": "veml6070",
+-    "Description": "Vishay VEML6070 UV Sensor Library",
+-    "Sensor Class": {
+-        "VEML6070": {
+-            "Name": "API for the Vishay VEML6070 UV Sensor",
+-            "Description": "This is the UPM Module for the Vishay VEML6070 UV Sensor. VEML6070 is an advanced ultraviolet (UV) light sensor with I2C protocol interface and designed by the CMOS process. It is easily operated via a simple I2C command. The active acknowledge (ACK) feature with threshold windows setting allows the UV sensor to send out a UVI alert message. Under a strong solar UVI condition, the smart ACK signal can be easily implemented by the software programming. VEML6070 incorporates a photodiode, amplifiers, and analog / digital circuits into a single chip. VEML6070's adoption of FiltronTM UV technology provides the best spectral sensitivity to cover UV spectrum sensing. It has an excellent temperature compensation and a robust refresh rate setting that does not use an external RC low pass filter. VEML6070 has linear sensitivity to solar UV light and is easily adjusted by an external resistor.",
+-            "Aliases": ["veml6070"],
+-            "Categories": ["light"],
+-            "Connections": ["i2c"],
+-            "Project Type": ["prototyping", "commercial"],
+-            "Manufacturers": ["Vishay", "Adafruit"],
+-            "Examples": {
+-                "Java": ["VEML6070_Example.java"],
+-                "Python": ["veml6070.py"],
+-                "Node.js": ["veml6070.js"],
+-                "C++": ["veml6070.cxx"],
+-                "C": ["veml6070.c"]
+-            },
+-            "Specifications": {
+-                "Vsource": {
+-                    "unit": "V",
+-                    "min": 2.7,
+-                    "max": 5.5
+-                },
+-                "Supply Current": {
+-                    "unit": "uA",
+-                    "min" : 100,
+-                    "max" : 250
+-                },
+-                "Operating Temperature": {
+-                    "unit": "°C",
+-                    "min": -40,
+-                    "max": 85
+-                },
+-                "Maximum UVA Sensativity": {
+-                    "unit": "mW/cm2",
+-                    "typ" : 328
+-                }
+-            },
+-            "Platforms": {
+-                "Intel Joule Module": {
+-                    "Notes": []
+-                },
+-                "Intel Edison": {
+-                    "Notes": []
+-                }
+-            },
+-            "Urls": {
+-                "Product Pages": ["https://www.adafruit.com/product/2899", "https://learn.adafruit.com/adafruit-veml6070-uv-light-sensor-breakout/overview?gclid=Cj0KCQjwn6DMBRC0ARIsAHZtCeOQb5G3DDYxFmW9TmWxzijBIP1Gm_gNAo4PZ00Kwz3CGimYd1dBdu4aAo6IEALw_wcB"],
+-                "Datasheets": ["https://www.vishay.com/docs/84277/veml6070.pdf"]
+-            }
+-        }
+-    }
+-}
+-- 
+2.7.4
+

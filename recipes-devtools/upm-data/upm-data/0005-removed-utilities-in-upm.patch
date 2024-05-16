@@ -1,0 +1,537 @@
+From a6c7f3ec2813148dfe10b51c877e03c49ca0621d Mon Sep 17 00:00:00 2001
+From: Ganesh K <ganesh.k@phytec.in>
+Date: Mon, 24 Jun 2019 17:15:47 +0530
+Subject: [PATCH 5/5] removed utilities in upm
+
+---
+ src/utilities/CMakeLists.txt    |   7 -
+ src/utilities/upm_utilities.c   | 306 ----------------------------------------
+ src/utilities/upm_utilities.cxx |   0
+ src/utilities/upm_utilities.h   | 157 ---------------------
+ src/utilities/upm_utilities.hpp |   0
+ src/utilities/utilities.i       |  14 --
+ 6 files changed, 484 deletions(-)
+ delete mode 100644 src/utilities/CMakeLists.txt
+ delete mode 100644 src/utilities/upm_utilities.c
+ delete mode 100644 src/utilities/upm_utilities.cxx
+ delete mode 100644 src/utilities/upm_utilities.h
+ delete mode 100644 src/utilities/upm_utilities.hpp
+ delete mode 100644 src/utilities/utilities.i
+
+diff --git a/src/utilities/CMakeLists.txt b/src/utilities/CMakeLists.txt
+deleted file mode 100644
+index 56d24d1..0000000
+--- a/src/utilities/CMakeLists.txt
++++ /dev/null
+@@ -1,7 +0,0 @@
+-upm_mixed_module_init (NAME utilities
+-    DESCRIPTION "Utilities Library"
+-    CPP_HDR upm_utilities.hpp
+-    CPP_SRC upm_utilities.cxx
+-    C_HDR upm_utilities.h
+-    C_SRC upm_utilities.c
+-    CPP_WRAPS_C)
+diff --git a/src/utilities/upm_utilities.c b/src/utilities/upm_utilities.c
+deleted file mode 100644
+index 850223f..0000000
+--- a/src/utilities/upm_utilities.c
++++ /dev/null
+@@ -1,306 +0,0 @@
+-/*
+- * Authors:
+- *          Jon Trulson <jtrulson@ics.com>
+- * Contributions: Rex Tsai <rex.cc.tsai@gmail.com>
+- *                Abhishek Malik <abhishek.malik@intel.com>
+- * Copyright (c) 2017 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#ifndef _POSIX_C_SOURCE
+-// We need at least 199309L for clock_nanosleep()
+-# define _POSIX_C_SOURCE 200809L
+-#endif
+-#include <assert.h>
+-#include <time.h>
+-#include <errno.h>
+-#include "upm_platform.h"
+-#include "upm_utilities.h"
+-
+-
+-/**
+- * Calculate the delta of two upm_clock_t values as
+- *      delta = finish - start
+- *
+- * @param finish Ending upm_clock_t time
+- * @param start Beginning upm_clock_t time
+- * @return Time in nanoseconds
+- */
+-static uint64_t _delta_ns(const upm_clock_t* finish, const upm_clock_t* start)
+-{
+-    uint64_t delta;
+-    assert((finish != NULL) && (start != NULL) && "_delta_ns, arguments cannot be NULL");
+-
+-#if defined(UPM_PLATFORM_ZEPHYR)
+-    delta = SYS_CLOCK_HW_CYCLES_TO_NS64(*finish - *start);
+-#elif defined(UPM_PLATFORM_LINUX)
+-
+-    delta = (finish->tv_sec * 1000000000UL + finish->tv_nsec) -
+-        (start->tv_sec * 1000000000UL + start->tv_nsec);
+-#else
+-#error "Unknown platform, valid platforms are {UPM_PLATFORM_ZEPHYR, UPM_PLATFORM_LINUX}"
+-#endif
+-    return delta;
+-}
+-
+-void upm_delay(uint32_t time)
+-{
+-    /* Return if time == 0 */
+-    if (!time)
+-        return;
+-
+-#if defined(UPM_PLATFORM_LINUX)
+-
+-    upm_clock_t delay_time = {time, 0};
+-
+-    // here we spin until the delay is complete - detecting signals
+-    // and continuing where we left off
+-    while (clock_nanosleep(CLOCK_MONOTONIC, 0, &delay_time, &delay_time) == EINTR);
+-
+-#elif defined(UPM_PLATFORM_ZEPHYR)
+-# if KERNEL_VERSION_MAJOR == 1 && KERNEL_VERSION_MINOR >= 6
+-
+-    struct k_timer timer;
+-    k_timer_init(&timer, NULL, NULL);
+-    k_timer_start(&timer, time * 1000, 0);
+-    k_timer_status_sync(&timer);
+-
+-# else
+-
+-    struct nano_timer timer;
+-    void *timer_data[1];
+-    nano_timer_init(&timer, timer_data);
+-    nano_timer_start(&timer, SECONDS(time) + 1);
+-    nano_timer_test(&timer, TICKS_UNLIMITED);
+-
+-# endif
+-
+-#else
+-#error "Unknown platform, valid platforms are {UPM_PLATFORM_ZEPHYR, UPM_PLATFORM_LINUX}"
+-#endif
+-}
+-
+-void upm_delay_ms(uint32_t time)
+-{
+-    /* Return if time == 0 */
+-    if (!time)
+-        return;
+-
+-#if defined(UPM_PLATFORM_LINUX)
+-
+-    upm_clock_t delay_time = {time / 1000, (time % 1000) * 1000000UL};
+-
+-    // here we spin until the delay is complete - detecting signals
+-    // and continuing where we left off
+-    while (clock_nanosleep(CLOCK_MONOTONIC, 0, &delay_time, &delay_time) == EINTR);
+-
+-#elif defined(UPM_PLATFORM_ZEPHYR)
+-# if KERNEL_VERSION_MAJOR == 1 && KERNEL_VERSION_MINOR >= 6
+-
+-    struct k_timer timer;
+-    k_timer_init(&timer, NULL, NULL);
+-    k_timer_start(&timer, time, 0);
+-    k_timer_status_sync(&timer);
+-
+-# else
+-
+-    struct nano_timer timer;
+-    void *timer_data[1];
+-    nano_timer_init(&timer, timer_data);
+-    nano_timer_start(&timer, MSEC(time) + 1);
+-    nano_timer_test(&timer, TICKS_UNLIMITED);
+-
+-# endif
+-#else
+-#error "Unknown platform, valid platforms are {UPM_PLATFORM_ZEPHYR, UPM_PLATFORM_LINUX}"
+-#endif
+-}
+-
+-void upm_delay_us(uint32_t time)
+-{
+-    /* Return if time == 0 */
+-    if (!time)
+-        return;
+-
+-#if defined(UPM_PLATFORM_LINUX)
+-
+-    upm_clock_t delay_time = {time / 1000000, (time % 1000000) * 1000};
+-
+-    // here we spin until the delay is complete - detecting signals
+-    // and continuing where we left off
+-    while (clock_nanosleep(CLOCK_MONOTONIC, 0, &delay_time, &delay_time) == EINTR);
+-
+-#elif defined(UPM_PLATFORM_ZEPHYR)
+-# if KERNEL_VERSION_MAJOR == 1 && KERNEL_VERSION_MINOR >= 6
+-    // we will use a upm_clock to do microsecond timings here as k_timer has
+-    // only a millisecond resolution.  So we init a clock and spin.
+-
+-    upm_clock_t timer = upm_clock_init();
+-    while (upm_elapsed_us(&timer) < time); // spin
+-
+-# else
+-
+-    struct nano_timer timer;
+-    void *timer_data[1];
+-    nano_timer_init(&timer, timer_data);
+-    nano_timer_start(&timer, USEC(time) + 1);
+-    nano_timer_test(&timer, TICKS_UNLIMITED);
+-
+-# endif
+-
+-#else
+-#error "Unknown platform, valid platforms are {UPM_PLATFORM_ZEPHYR, UPM_PLATFORM_LINUX}"
+-#endif
+-}
+-
+-void upm_delay_ns(uint64_t time)
+-{
+-    /* Return if time == 0 */
+-    if (!time)
+-        return;
+-
+-#if defined(UPM_PLATFORM_LINUX)
+-
+-    upm_clock_t delay_time = {time / 1000000000UL, time % 1000000000UL};
+-
+-    // here we spin until the delay is complete - detecting signals
+-    // and continuing where we left off
+-    while (clock_nanosleep(CLOCK_MONOTONIC, 0, &delay_time, &delay_time) == EINTR);
+-
+-#elif defined(UPM_PLATFORM_ZEPHYR)
+-# if KERNEL_VERSION_MAJOR == 1 && KERNEL_VERSION_MINOR >= 6
+-    // we will use a upm_clock to do microsecond timings here as k_timer has
+-    // only a millisecond resolution.  So we init a clock and spin.
+-
+-    upm_clock_t timer = upm_clock_init();
+-    while (upm_elapsed_ns(&timer) < time); // spin
+-
+-# else
+-
+-    struct nano_timer timer;
+-    void *timer_data[1];
+-    nano_timer_init(&timer, timer_data);
+-    nano_timer_start(&timer, time + 1);
+-    nano_timer_test(&timer, TICKS_UNLIMITED);
+-
+-# endif
+-
+-#else
+-#error "Unknown platform, valid platforms are {UPM_PLATFORM_ZEPHYR, UPM_PLATFORM_LINUX}"
+-#endif
+-}
+-
+-upm_clock_t upm_clock_init(void)
+-{
+-    upm_clock_t clock = {0};
+-#if defined(UPM_PLATFORM_LINUX)
+-    clock_gettime(CLOCK_MONOTONIC, &clock);
+-#elif defined(UPM_PLATFORM_ZEPHYR)
+-    clock = sys_cycle_get_32();
+-#else
+-#error "Unknown platform, valid platforms are {UPM_PLATFORM_ZEPHYR, UPM_PLATFORM_LINUX}"
+-#endif
+-
+-    return clock;
+-}
+-
+-uint64_t upm_elapsed_ms(const upm_clock_t *clock)
+-{
+-    assert((clock != NULL) && "upm_elapsed_ms, clock cannot be NULL");
+-
+-    upm_clock_t now = {0};
+-
+-#if defined(UPM_PLATFORM_LINUX)
+-    clock_gettime(CLOCK_MONOTONIC, &now);
+-#elif defined(UPM_PLATFORM_ZEPHYR)
+-    now = sys_cycle_get_32();
+-#else
+-#error "Unknown platform, valid platforms are {UPM_PLATFORM_ZEPHYR, UPM_PLATFORM_LINUX}"
+-#endif
+-
+-    return _delta_ns(&now, clock)/1000000;
+-}
+-
+-uint64_t upm_elapsed_us(const upm_clock_t *clock)
+-{
+-    assert((clock != NULL) && "upm_elapsed_us, clock cannot be NULL");
+-
+-    upm_clock_t now = {0};
+-
+-#if defined(UPM_PLATFORM_LINUX)
+-    clock_gettime(CLOCK_MONOTONIC, &now);
+-#elif defined(UPM_PLATFORM_ZEPHYR)
+-    now = sys_cycle_get_32();
+-#else
+-#error "Unknown platform, valid platforms are {UPM_PLATFORM_ZEPHYR, UPM_PLATFORM_LINUX}"
+-#endif
+-
+-    return _delta_ns(&now, clock)/1000;
+-}
+-
+-uint64_t upm_elapsed_ns(const upm_clock_t *clock)
+-{
+-    assert((clock != NULL) && "upm_elapsed_ns, clock cannot be NULL");
+-
+-    upm_clock_t now = {0};
+-
+-#if defined(UPM_PLATFORM_LINUX)
+-    clock_gettime(CLOCK_MONOTONIC, &now);
+-#elif defined(UPM_PLATFORM_ZEPHYR)
+-    now = sys_cycle_get_32();
+-#else
+-#error "Unknown platform, valid platforms are {UPM_PLATFORM_ZEPHYR, UPM_PLATFORM_LINUX}"
+-#endif
+-
+-    return _delta_ns(&now, clock);
+-}
+-
+-// https://www3.epa.gov/airnow/aqi-technical-assistance-document-may2016.pdf
+-static struct aqi {
+-    float clow;
+-    float chigh;
+-    int llow;
+-    int lhigh;
+-} aqi[] = {
+-  {0.0,    12.0,   0, 50},
+-  {12.1,   35.4,  51, 100},
+-  {35.5,   55.4, 101, 150},
+-  {55.5,  150.4, 151, 200},
+-  {150.5, 250.4, 201, 300},
+-  {250.5, 350.4, 301, 400},
+-  {350.5, 500.4, 401, 500},
+-};
+-
+-int upm_ugm3_to_aqi (double ugm3)
+-{
+-  int i;
+-
+-  for (i = 0; i < 7; i++) {
+-    if (ugm3 >= aqi[i].clow &&
+-        ugm3 <= aqi[i].chigh) {
+-        // Ip =  [(Ihi-Ilow)/(BPhi-BPlow)] (Cp-BPlow)+Ilow,
+-        return ((aqi[i].lhigh - aqi[i].llow) / (aqi[i].chigh - aqi[i].clow)) * 
+-            (ugm3 - aqi[i].clow) + aqi[i].llow;
+-    }
+-  }
+-
+-  return 0;
+-}
+diff --git a/src/utilities/upm_utilities.cxx b/src/utilities/upm_utilities.cxx
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/src/utilities/upm_utilities.h b/src/utilities/upm_utilities.h
+deleted file mode 100644
+index 1910ee8..0000000
+--- a/src/utilities/upm_utilities.h
++++ /dev/null
+@@ -1,157 +0,0 @@
+-/*
+- * Authors:
+- *          Jon Trulson <jtrulson@ics.com>
+- * Contributions: Rex Tsai <rex.cc.tsai@gmail.com>
+- *                Abhishek Malik <abhishek.malik@intel.com>
+- * Copyright (c) 2017 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-#ifndef UPM_UTILITIES_H_
+-#define UPM_UTILITIES_H_
+-
+-#include <upm_platform.h>
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-#if defined(UPM_PLATFORM_LINUX)
+-#include <stdio.h>
+-#include <stdlib.h>
+-#include <stdint.h>
+-#include <unistd.h>
+-#include <sys/time.h>
+-
+-typedef struct timespec upm_clock_t;
+-#endif /* UPM_PLATFORM_LINUX */
+-
+-#if defined(UPM_PLATFORM_ZEPHYR)
+-#include <zephyr.h>
+-#include <device.h>
+-#include <sys_clock.h>
+-#include <version.h>
+-#include <kernel_version.h>
+-
+-#if defined(CONFIG_STDOUT_CONSOLE)
+-#include <stdio.h>
+-#define PRINT           printf
+-#else
+-#include <misc/printk.h>
+-#define PRINT           printk
+-#endif
+-
+-typedef uint64_t upm_clock_t;
+-
+-#endif /* UPM_PLATFORM_ZEPHYR */
+-
+-/**
+- * Delay for a number of seconds (s)
+- *
+- * @param time The number of seconds to delay for
+- */
+-void upm_delay(uint32_t time);
+-
+-/**
+- * Delay for a number of milliseconds (ms)
+- *
+- * @param time The number of milliseconds to delay for
+- */
+-void upm_delay_ms(uint32_t time);
+-
+-/**
+- * Delay for a number of microseconds (us)
+- *
+- * @param time The number of microseconds to delay for
+- */
+-void upm_delay_us(uint32_t time);
+-
+-/**
+- * Delay for a number of nanoseconds (ns)
+- *
+- * Note, sub-microsecond accurate time on *nix is generally not available OOB
+- * and high resolution times are also not supported on all HW architectures.
+- *
+- * @param time The number of nanoseconds to delay for
+- */
+-void upm_delay_ns(uint64_t time);
+-
+-/**
+- * Initialize a clock.  This can be used with upm_elapsed_ms() and
+- * upm_elapsed_us() for measuring a duration.
+- *
+- * For *nix operating systems, this initializes a MONOTONIC clock.
+- *
+- * Example:
+- *      upm_clock_t start = upm_clock_init();
+- *          ... do stuff ...
+- *      uint64_t delta_ns = upm_elapsed_us(&start);
+- *
+- * @return The upm_clock_t initialized to the current time
+- */
+-upm_clock_t upm_clock_init(void);
+-
+-/**
+- * Return the elapsed time in milliseconds since upm_init_clock() was
+- * last called.
+- *
+- * @param clock A upm_clock_t initialized by upm_init_clock()
+- * @return the number of milliseconds elapsed since upm_init_clock()
+- * was called on the clock parameter.
+- */
+-uint64_t upm_elapsed_ms(const upm_clock_t *clock);
+-
+-/**
+- * Return the elapsed time in microseconds since upm_init_clock() was
+- * last called.
+- *
+- * @param clock A upm_clock_t initialized by upm_init_clock()
+- * @return the number of microseconds elapsed since upm_init_clock()
+- * was called on the clock parameter.
+- */
+-uint64_t upm_elapsed_us(const upm_clock_t *clock);
+-
+-/**
+- * Return the elapsed time in nanoseconds since upm_init_clock() was
+- * last called.
+- *
+- * Note, sub-microsecond accurate time on *nix is generally not available OOB
+- * and high resolution times are also not supported on all HW architectures.
+- *
+- * @param clock A upm_clock_t initialized by upm_init_clock()
+- * @return the number of nanoseconds elapsed since upm_init_clock()
+- * was called on the clock parameter.
+- */
+-uint64_t upm_elapsed_ns(const upm_clock_t *clock);
+-
+-/**
+- * Return the AQI (based on EPA standards) using the ugm3 value
+- * calculated by the sensor module.
+- *
+- * @param ugm3 micrograms per cubic meter
+- * @return calculated AQI
+- */
+-int upm_ugm3_to_aqi (double ugm3);
+-
+-#ifdef __cplusplus
+-}
+-#endif
+-
+-#endif /* UPM_UTILITIES_H_ */
+diff --git a/src/utilities/upm_utilities.hpp b/src/utilities/upm_utilities.hpp
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/src/utilities/utilities.i b/src/utilities/utilities.i
+deleted file mode 100644
+index f61ce96..0000000
+--- a/src/utilities/utilities.i
++++ /dev/null
+@@ -1,14 +0,0 @@
+-%include "../common_top.i"
+-
+-/* BEGIN Java syntax  ------------------------------------------------------- */
+-#ifdef SWIGJAVA
+-JAVA_JNI_LOADLIBRARY(javaupm_utilities)
+-#endif
+-/* END Java syntax */
+-
+-/* BEGIN Common SWIG syntax ------------------------------------------------- */
+-%{
+-#include "upm_utilities.hpp"
+-%}
+-%include "upm_utilities.hpp"
+-/* END Common SWIG syntax */
+-- 
+2.7.4
+

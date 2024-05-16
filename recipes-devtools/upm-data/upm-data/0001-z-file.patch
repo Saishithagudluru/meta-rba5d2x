@@ -1,0 +1,977 @@
+From 18e959b8f645fab75617c88844172ead8e1b02dd Mon Sep 17 00:00:00 2001
+From: Ganesh K <ganesh.k@phytec.in>
+Date: Mon, 24 Jun 2019 19:50:29 +0530
+Subject: [PATCH] z file
+
+---
+ src/zfm20/CMakeLists.txt |   5 -
+ src/zfm20/zfm20.cxx      | 458 -----------------------------------------------
+ src/zfm20/zfm20.hpp      | 373 --------------------------------------
+ src/zfm20/zfm20.i        |  24 ---
+ src/zfm20/zfm20.json     |  66 -------
+ 5 files changed, 926 deletions(-)
+ delete mode 100644 src/zfm20/CMakeLists.txt
+ delete mode 100644 src/zfm20/zfm20.cxx
+ delete mode 100644 src/zfm20/zfm20.hpp
+ delete mode 100644 src/zfm20/zfm20.i
+ delete mode 100644 src/zfm20/zfm20.json
+
+diff --git a/src/zfm20/CMakeLists.txt b/src/zfm20/CMakeLists.txt
+deleted file mode 100644
+index bc49e1a..0000000
+--- a/src/zfm20/CMakeLists.txt
++++ /dev/null
+@@ -1,5 +0,0 @@
+-set (libname "zfm20")
+-set (libdescription "Fingerprint Sensor Module")
+-set (module_src ${libname}.cxx)
+-set (module_hpp ${libname}.hpp)
+-upm_module_init(mraa utilities-c)
+diff --git a/src/zfm20/zfm20.cxx b/src/zfm20/zfm20.cxx
+deleted file mode 100644
+index 888685e..0000000
+--- a/src/zfm20/zfm20.cxx
++++ /dev/null
+@@ -1,458 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2015 Intel Corporation.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-
+-#include <iostream>
+-#include <string>
+-#include <stdexcept>
+-
+-#include "zfm20.hpp"
+-
+-using namespace upm;
+-using namespace std;
+-
+-static const int defaultDelay = 100;     // max wait time for read
+-
+-ZFM20::ZFM20(int uart, int baud): m_uart(uart)
+-{
+-  // Set the default password and address
+-  setPassword(ZFM20_DEFAULT_PASSWORD);
+-  setAddress(ZFM20_DEFAULT_ADDRESS);
+-
+-  initClock();
+-
+-  if (!setupTty(baud))
+-    throw std::runtime_error(std::string(__FUNCTION__) +
+-            ": failed to set baud rate to " + std::to_string(baud));
+-}
+-
+-
+-ZFM20::ZFM20(std::string uart_raw, int baud) : m_uart(uart_raw)
+-{
+-  // Set the default password and address
+-  setPassword(ZFM20_DEFAULT_PASSWORD);
+-  setAddress(ZFM20_DEFAULT_ADDRESS);
+-
+-  initClock();
+-
+-  if (!setupTty(baud))
+-    throw std::runtime_error(std::string(__FUNCTION__) +
+-            ": failed to set baud rate to " + std::to_string(baud));
+-}
+-
+-int ZFM20::readData(char *buffer, int len)
+-{
+-  if (!m_uart.dataAvailable(defaultDelay))
+-    return 0;               // timed out
+-
+-  int rv = m_uart.read(buffer, len);
+-
+-  if (rv < 0)
+-    throw std::runtime_error(std::string(__FUNCTION__) +
+-            ": Uart::read() failed: " + string(strerror(errno)));
+-
+-  return rv;
+-}
+-
+-int ZFM20::writeData(char *buffer, int len)
+-{
+-  int rv = m_uart.write(buffer, len);
+-
+-  if (rv < 0)
+-      throw std::runtime_error(std::string(__FUNCTION__) +
+-                               ": Uart::write() failed: " +
+-                               string(strerror(errno)));
+-
+-  if (rv == 0)
+-      throw std::runtime_error(std::string(__FUNCTION__) +
+-                               ": Uart::write() failed, no bytes written");
+-
+-  return rv;
+-}
+-
+-bool ZFM20::setupTty(uint32_t baud)
+-{
+-    return m_uart.setBaudRate(baud) == mraa::SUCCESS;
+-}
+-
+-int ZFM20::writeCmdPacket(uint8_t *pkt, int len)
+-{
+-  uint8_t rPkt[ZFM20_MAX_PKT_LEN];
+-
+-  rPkt[0] = ZFM20_START1;             // header bytes
+-  rPkt[1] = ZFM20_START2;
+-
+-  rPkt[2] = (m_address >> 24) & 0xff; // address
+-  rPkt[3] = (m_address >> 16) & 0xff;
+-  rPkt[4] = (m_address >> 8) & 0xff;
+-  rPkt[5] = m_address & 0xff;
+-
+-  rPkt[6] = PKT_COMMAND;
+-
+-  rPkt[7] = ((len + 2) >> 8) & 0xff;  // length (+ len bytes)
+-  rPkt[8] = (len + 2) & 0xff;
+-
+-  // compute the starting checksum
+-  uint16_t cksum = rPkt[7] + rPkt[8] + PKT_COMMAND;
+-
+-  int j = 9;
+-  for (int i=0; i<len; i++)
+-    {
+-      rPkt[j] = pkt[i];
+-      cksum += rPkt[j];
+-      j++;
+-    }
+-
+-  rPkt[j++] = (cksum >> 8) & 0xff;    // store the cksum
+-  rPkt[j++] = cksum & 0xff;
+-
+-  return writeData((char *)rPkt, j);
+-}
+-
+-void ZFM20::initClock()
+-{
+-  m_clock = upm_clock_init();
+-}
+-
+-uint32_t ZFM20::getMillis()
+-{
+-  return upm_elapsed_ms(&m_clock);
+-}
+-
+-bool ZFM20::verifyPacket(uint8_t *pkt, int len)
+-{
+-  // verify packet header
+-  if (pkt[0] != ZFM20_START1 || pkt[1] != ZFM20_START2)
+-      throw std::runtime_error(std::string(__FUNCTION__) +
+-                               ": Invalid packet header");
+-
+-  // check the ack byte
+-  if (pkt[6] != PKT_ACK)
+-      throw std::runtime_error(std::string(__FUNCTION__) +
+-                               ": Invalid ACK code");
+-
+-  return true;
+-}
+-
+-bool ZFM20::getResponse(uint8_t *pkt, int len)
+-{
+-  char buf[ZFM20_MAX_PKT_LEN];
+-
+-  initClock();
+-
+-  int idx = 0;
+-  int timer = 0;
+-  int rv;
+-
+-  while (idx < len)
+-    {
+-      // wait for some data
+-      if (!m_uart.dataAvailable(100))
+-        {
+-          timer += getMillis();
+-          if (timer > ZFM20_TIMEOUT)
+-              throw std::runtime_error(std::string(__FUNCTION__) +
+-                                       ": Timed out waiting for packet");
+-
+-          continue;
+-        }
+-
+-      if ((rv = readData(buf, ZFM20_MAX_PKT_LEN)) == 0)
+-          throw std::runtime_error(std::string(__FUNCTION__) +
+-                                   ": readData() failed, no data returned");
+-
+-      // copy it into the user supplied buffer
+-      for (int i=0; i<rv; i++)
+-        {
+-          pkt[idx++] = buf[i];
+-          if (idx >= len)
+-            break;
+-        }
+-    }
+-
+-  // now verify it.
+-  return verifyPacket(pkt, len);
+-}
+-
+-bool ZFM20::verifyPassword()
+-{
+-  const int pktLen = 5;
+-  uint8_t pkt[pktLen] = {CMD_VERIFY_PASSWORD,
+-                         static_cast<uint8_t>((m_password >> 24) & 0xff),
+-                         static_cast<uint8_t>((m_password >> 16) & 0xff),
+-                         static_cast<uint8_t>((m_password >> 8) & 0xff),
+-                         static_cast<uint8_t>(m_password & 0xff) };
+-
+-  writeCmdPacket(pkt, pktLen);
+-
+-  // now read a response
+-  const int rPktLen = 12;
+-  uint8_t rPkt[rPktLen];
+-
+-  getResponse(rPkt, rPktLen);
+-
+-
+-  return true;
+-}
+-
+-int ZFM20::getNumTemplates()
+-{
+-  const int pktLen = 1;
+-  uint8_t pkt[pktLen] = {CMD_GET_TMPL_COUNT};
+-
+-  writeCmdPacket(pkt, pktLen);
+-
+-  // now read a response
+-  const int rPktLen = 14;
+-  uint8_t rPkt[rPktLen];
+-
+-  getResponse(rPkt, rPktLen);
+-
+-  // check confirmation code
+-  if (rPkt[9] != 0x00)
+-      throw std::runtime_error(std::string(__FUNCTION__) +
+-                               ": Invalid confirmation code");
+-  return ((rPkt[10] << 8) | rPkt[11]);
+-}
+-
+-bool ZFM20::setNewPassword(uint32_t pwd)
+-{
+-  const int pktLen = 5;
+-  uint8_t pkt[pktLen] = {CMD_SET_PASSWORD,
+-                         static_cast<uint8_t>((pwd >> 24) & 0xff),
+-                         static_cast<uint8_t>((pwd >> 16) & 0xff),
+-                         static_cast<uint8_t>((pwd >> 8) & 0xff),
+-                         static_cast<uint8_t>(pwd & 0xff) };
+-
+-  writeCmdPacket(pkt, pktLen);
+-
+-  // now read a response
+-  const int rPktLen = 12;
+-  uint8_t rPkt[rPktLen];
+-
+-  getResponse(rPkt, rPktLen);
+-
+-  // check confirmation code
+-  if (rPkt[9] != 0x00)
+-      throw std::runtime_error(std::string(__FUNCTION__) +
+-                               ": Invalid confirmation code");
+-
+-  m_password = pwd;
+-
+-  return true;
+-}
+-
+-bool ZFM20::setNewAddress(uint32_t addr)
+-{
+-  const int pktLen = 5;
+-  uint8_t pkt[pktLen] = {CMD_SET_ADDRESS,
+-                         static_cast<uint8_t>((addr >> 24) & 0xff),
+-                         static_cast<uint8_t>((addr >> 16) & 0xff),
+-                         static_cast<uint8_t>((addr >> 8) & 0xff),
+-                         static_cast<uint8_t>(addr & 0xff) };
+-
+-  writeCmdPacket(pkt, pktLen);
+-
+-  // now read a response
+-  const int rPktLen = 12;
+-  uint8_t rPkt[rPktLen];
+-
+-  getResponse(rPkt, rPktLen);
+-
+-  // check confirmation code
+-  if (rPkt[9] != 0x00)
+-      throw std::runtime_error(std::string(__FUNCTION__) +
+-                               ": Invalid confirmation code");
+-
+-  m_address = addr;
+-
+-  return true;
+-}
+-
+-uint8_t ZFM20::generateImage()
+-{
+-  const int pktLen = 1;
+-  uint8_t pkt[pktLen] = {CMD_GEN_IMAGE};
+-
+-  writeCmdPacket(pkt, pktLen);
+-
+-  // now read a response
+-  const int rPktLen = 12;
+-  uint8_t rPkt[rPktLen];
+-
+-  getResponse(rPkt, rPktLen);
+-
+-  return rPkt[9];
+-}
+-
+-uint8_t ZFM20::image2Tz(int slot)
+-{
+-  if (slot != 1 && slot != 2)
+-      throw std::out_of_range(std::string(__FUNCTION__) +
+-                              ": slot must be 1 or 2");
+-
+-  const int pktLen = 2;
+-  uint8_t pkt[pktLen] = {CMD_IMG2TZ,
+-                         static_cast<uint8_t>(slot & 0xff)};
+-
+-  writeCmdPacket(pkt, pktLen);
+-
+-  // now read a response
+-  const int rPktLen = 12;
+-  uint8_t rPkt[rPktLen];
+-
+-  getResponse(rPkt, rPktLen);
+-
+-  return rPkt[9];
+-}
+-
+-uint8_t ZFM20::createModel()
+-{
+-  const int pktLen = 1;
+-  uint8_t pkt[pktLen] = {CMD_REGMODEL};
+-
+-  writeCmdPacket(pkt, pktLen);
+-
+-  // now read a response
+-  const int rPktLen = 12;
+-  uint8_t rPkt[rPktLen];
+-
+-  getResponse(rPkt, rPktLen);
+-
+-  return rPkt[9];
+-}
+-
+-uint8_t ZFM20::storeModel(int slot, uint16_t id)
+-{
+-  if (slot != 1 && slot != 2)
+-      throw std::out_of_range(std::string(__FUNCTION__) +
+-                              ": slot must be 1 or 2");
+-
+-  const int pktLen = 4;
+-  uint8_t pkt[pktLen] = {CMD_STORE,
+-                         static_cast<uint8_t>(slot & 0xff),
+-                         static_cast<uint8_t>((id >> 8) & 0xff),
+-                         static_cast<uint8_t>(id & 0xff)};
+-
+-  writeCmdPacket(pkt, pktLen);
+-
+-  // now read a response
+-  const int rPktLen = 12;
+-  uint8_t rPkt[rPktLen];
+-
+-  getResponse(rPkt, rPktLen);
+-
+-  return rPkt[9];
+-}
+-
+-uint8_t ZFM20::deleteModel(uint16_t id)
+-{
+-  const int pktLen = 5;
+-  uint8_t pkt[pktLen] = {CMD_DELETE_TMPL,
+-                         static_cast<uint8_t>((id >> 8) & 0xff),
+-                         static_cast<uint8_t>(id & 0xff),
+-                         0x00,
+-                         0x01};
+-
+-  writeCmdPacket(pkt, pktLen);
+-
+-  // now read a response
+-  const int rPktLen = 12;
+-  uint8_t rPkt[rPktLen];
+-
+-  getResponse(rPkt, rPktLen);
+-
+-  return rPkt[9];
+-}
+-
+-uint8_t ZFM20::deleteDB()
+-{
+-  const int pktLen = 1;
+-  uint8_t pkt[pktLen] = {CMD_EMPTYDB};
+-
+-  writeCmdPacket(pkt, pktLen);
+-
+-  // now read a response
+-  const int rPktLen = 12;
+-  uint8_t rPkt[rPktLen];
+-
+-  getResponse(rPkt, rPktLen);
+-
+-  return rPkt[9];
+-}
+-
+-uint8_t ZFM20::search(int slot, uint16_t &id, uint16_t &score)
+-{
+-  id = 0;
+-  score = 0;
+-
+-  if (slot != 1 && slot != 2)
+-      throw std::out_of_range(std::string(__FUNCTION__) +
+-                              ": slot must be 1 or 2");
+-
+-  // search from page 0x0000 to page 0x00a3
+-  const int pktLen = 6;
+-  uint8_t pkt[pktLen] = {CMD_SEARCH,
+-                         static_cast<uint8_t>(slot & 0xff),
+-                         0x00,
+-                         0x00,
+-                         0x00,
+-                         0xa3};
+-
+-  writeCmdPacket(pkt, pktLen);
+-
+-  // now read a response
+-  const int rPktLen = 16;
+-  uint8_t rPkt[rPktLen];
+-
+-  getResponse(rPkt, rPktLen);
+-
+-  // if it was found, extract the location and the score
+-  if (rPkt[9] == ERR_OK)
+-    {
+-      id = ((rPkt[10] << 8) & 0xff) | (rPkt[11] & 0xff);
+-      score = ((rPkt[12] << 8) & 0xff) | (rPkt[13] & 0xff);
+-    }
+-
+-  return rPkt[9];
+-}
+-
+-uint8_t ZFM20::match(uint16_t &score)
+-{
+-  score = 0;
+-
+-  const int pktLen = 1;
+-  uint8_t pkt[pktLen] = {CMD_MATCH};
+-
+-  writeCmdPacket(pkt, pktLen);
+-
+-  // now read a response
+-  const int rPktLen = 14;
+-  uint8_t rPkt[rPktLen];
+-
+-  getResponse(rPkt, rPktLen);
+-
+-  score = ((rPkt[10] << 8) & 0xff) | (rPkt[11] & 0xff);
+-
+-  return rPkt[9];
+-}
+diff --git a/src/zfm20/zfm20.hpp b/src/zfm20/zfm20.hpp
+deleted file mode 100644
+index 8d32833..0000000
+--- a/src/zfm20/zfm20.hpp
++++ /dev/null
+@@ -1,373 +0,0 @@
+-/*
+- * Author: Jon Trulson <jtrulson@ics.com>
+- * Copyright (c) 2015 Intel Corporation.
+- *
+- * Thanks to Adafruit for supplying a google translated version of the
+- * Chinese datasheet and some clues in their code.
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining
+- * a copy of this software and associated documentation files (the
+- * "Software"), to deal in the Software without restriction, including
+- * without limitation the rights to use, copy, modify, merge, publish,
+- * distribute, sublicense, and/or sell copies of the Software, and to
+- * permit persons to whom the Software is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- */
+-#pragma once
+-
+-#include <string>
+-#include <iostream>
+-
+-#include <stdint.h>
+-#include <stdlib.h>
+-#include <unistd.h>
+-#include <string.h>
+-#include <fcntl.h>
+-#include <errno.h>
+-#include <sys/select.h>
+-#include <sys/types.h>
+-#include <sys/stat.h>
+-
+-#include "mraa.hpp"
+-#include "upm_utilities.h"
+-
+-#define ZFM20_DEFAULT_UART 0
+-
+-// protocol start codes
+-#define ZFM20_START1 0xef
+-#define ZFM20_START2 0x01
+-
+-#define ZFM20_MAX_PKT_LEN 256
+-
+-#define ZFM20_TIMEOUT 5000 // in ms
+-
+-#define ZFM20_DEFAULT_PASSWORD 0x00000000
+-#define ZFM20_DEFAULT_ADDRESS  0xffffffff
+-
+-
+-namespace upm {
+-    /**
+-     * @brief ZFM-20 Fingerprint Sensor Module
+-     * @defgroup zfm20 libupm-zfm20
+-     * @ingroup seeed uart touch
+-     */
+-
+-    /**
+-     * @library zfm20
+-     * @sensor zfm20
+-     * @comname Fingerprint Sensor Module
+-     * @altname Grove Fingerprint Sensor
+-     * @type touch
+-     * @man seeed
+-     * @web http://wiki.seeed.cc/Grove-Fingerprint_Sensor/
+-     * @con uart
+-     *
+-     * @brief API for the ZFM-20 Fingerprint Sensor Module
+-     *
+-     * This class was tested on the Grove Fingerprint Sensor
+-     * Module. It can store up to 163 fingerprints.
+-     *
+-     * It is connected via a UART at 57,600 baud.
+-     *
+-     * @image html zfm20.jpg
+-     * This example demonstrates how to register and store a new fingerprint
+-     * @snippet zfm20-register.cxx Interesting
+-     * This example demonstrates reading a fingerprint and locating it in the DB
+-     * @snippet zfm20.cxx Interesting
+-     */
+-  class ZFM20 {
+-  public:
+-
+-    // commands
+-    typedef enum {
+-      CMD_GEN_IMAGE                     = 0x01,
+-      CMD_IMG2TZ                        = 0x02,
+-      CMD_MATCH                         = 0x03,
+-      CMD_SEARCH                        = 0x04,
+-      CMD_REGMODEL                      = 0x05,
+-      CMD_STORE                         = 0x06,
+-      CMD_LOAD_TMPL                     = 0x07,
+-      CMD_UPLOAD_TMPL                   = 0x08,
+-      CMD_DOWNLOAD_TMPL                 = 0x09,
+-      CMD_UPLOAD_IMAGE                  = 0x0a,
+-      CMD_DOWNLOAD_IMAGE                = 0x0b,
+-      CMD_DELETE_TMPL                   = 0x0c,
+-      CMD_EMPTYDB                       = 0x0d,
+-      CMD_SET_SYSPARAMS                 = 0x0e,
+-      CMD_GET_SYSPARAMS                 = 0x0f,
+-      CMD_SET_PASSWORD                  = 0x12,
+-      CMD_VERIFY_PASSWORD               = 0x13,
+-      CMD_GET_RANDOM_NUMBER             = 0x14,
+-      CMD_SET_ADDRESS                   = 0x15,
+-      CMD_GET_TMPL_COUNT                = 0x1d,
+-      CMD_GET_INDEX_TABLE               = 0x1f
+-    } ZFM20_COMMAND_T;
+-
+-    // Error response codes
+-    typedef enum {
+-      ERR_OK                            = 0x00,
+-      ERR_PACKET_RX_ERROR               = 0x01,
+-      ERR_NO_FINGER                     = 0x02,
+-      ERR_FP_IMAGE_FAILED               = 0x03,
+-      ERR_FP_TOO_MESSY                  = 0x06,
+-      ERR_FP_IMAGE_FEW_FEATURES         = 0x07,
+-      ERR_FP_NOMATCH                    = 0x08,
+-      ERR_FP_NOTFOUND                   = 0x09,
+-      ERR_FP_ENROLLMISMATCH             = 0x0a,
+-      ERR_BAD_LOCATION                  = 0x0b,
+-      ERR_DB_ERROR                      = 0x0c,
+-      ERR_UPLOAD_FEAT_FAILED            = 0x0d,
+-      ERR_NO_MORE_PACKETS               = 0x0e,
+-      ERR_UPLOAD_IMG_FAILED             = 0x0f,
+-      ERR_RM_TMPL_FAILED                = 0x10,
+-      ERR_EMPTY_DB_FAILED               = 0x11,
+-      ERR_INVALID_PWD                   = 0x13,
+-      ERR_INVALID_IMAGE                 = 0x15,
+-      ERR_RW_FLASH_ERROR                = 0x18,
+-      ERR_INVALID_REG                   = 0x1a,
+-      ERR_INVALID_ADDR                  = 0x20,
+-      ERR_NEEDS_PWD                     = 0x21,
+-      // end of module-specific errors
+-      ERR_INTERNAL_ERR                  = 0xff  // API internal error
+-    } ZFM20_ERRORS_T;
+-
+-    typedef enum {
+-      PKT_COMMAND                       = 0x01,
+-      PKT_DATA                          = 0x02,
+-      PKT_ACK                           = 0x07,
+-      PKT_END_DATA                      = 0x08
+-    } ZFM20_PKTCODES_T;
+-
+-    /**
+-     * ZFM20 constructor
+-     *
+-     * @param uart Target mraa UART index to use (0 or 1)
+-     * @param baud Desired baud rate
+-     */
+-    ZFM20(int uart, int baud = 57600);
+-
+-    /**
+-     * ZFM20 constructor
+-     *
+-     * @param uart File path (/dev/ttyXXX to uart
+-     * @param baud Desired baud rate
+-     */
+-    ZFM20(std::string uart_raw, int baud = 57600);
+-
+-    /**
+-     * ZFM20 destructor
+-     */
+-    virtual ~ZFM20() {}
+-
+-    /**
+-     * Reads any available data in a user-supplied buffer. Note: the
+-     * call blocks until data is available to be read. Use
+-     * dataAvailable() to determine whether there is data available
+-     * beforehand, to avoid blocking.
+-     *
+-     * @param buffer Buffer to hold the data read
+-     * @param len Length of the buffer
+-     * @return Number of bytes read
+-     */
+-    int readData(char *buffer, int len);
+-
+-    /**
+-     * Writes the data in the buffer to the device
+-     *
+-     * @param buffer Buffer to hold the data read
+-     * @param len Length of the buffer
+-     * @return Number of bytes written
+-     */
+-    int writeData(char *buffer, int len);
+-
+-    /**
+-     * Sets up proper tty I/O modes and the baud rate. For this device,
+-     * the default baud rate is 57,600.
+-     *
+-     * @param baud Desired baud rate.
+-     * @return True if successful
+-     */
+-    bool setupTty(uint32_t baud = 57600);
+-
+-    /**
+-     * Composes and writes a command packet
+-     *
+-     * @param pkt Packet
+-     * @param len Length of packet
+-     * @return Number of bytes written
+-     */
+-    int writeCmdPacket(uint8_t *pkt, int len);
+-
+-    /**
+-     * Verifies the packet header and indicates its validity
+-     *
+-     * @param pkt Packet to check
+-     * @param len Length of packet
+-     * @return True if the packet is valid, false otherwise
+-     */
+-    bool verifyPacket(uint8_t *pkt, int len);
+-
+-    /**
+-     * Returns the number of milliseconds elapsed since initClock()
+-     * was last called
+-     *
+-     * @return Elapsed milliseconds
+-     */
+-    uint32_t getMillis();
+-
+-    /**
+-     * Resets the clock
+-     *
+-     */
+-    void initClock();
+-
+-    /**
+-     * Sets the address that should be used to access the module
+-     *
+-     * @param addr Address to use
+-     */
+-    void setAddress(uint32_t addr) { m_address = addr; };
+-
+-    /**
+-     * Sets the password that should be used to access the module
+-     *
+-     * @param pw Password to use
+-     */
+-    void setPassword(uint32_t pw) { m_password = pw; };
+-
+-    /**
+-     * Gets the returned data from a request
+-     *
+-     * @param pkt Buffer to store the returned data
+-     * @param len Expected response length; pkt should be at least this
+-     * large
+-     * @return True if successful
+-     */
+-    bool getResponse(uint8_t *pkt, int len);
+-
+-    /**
+-     * Verifies and authenticates to the module. The password used is
+-     * the last one set by setPassword().
+-     *
+-     * @return True if successful
+-     */
+-    bool verifyPassword();
+-
+-    /**
+-     * Queries the module for the number of stored templates
+-     * (fingerprints).
+-     *
+-     * @return Number of currently stored templates
+-     */
+-    int getNumTemplates();
+-
+-    /**
+-     * Sets a new password for the module. This passowrd is
+-     * stored in the module, and is required to access
+-     * the module in the future.
+-     *
+-     * @param pwd New password to set on the module
+-     * @return True if successful
+-     */
+-    bool setNewPassword(uint32_t pwd);
+-
+-    /**
+-     * Sets a new address for the module. This address is
+-     * stored in the module, and is required to access
+-     * the module in the future.
+-     *
+-     * @param addr New address to set on the module
+-     * @return True if successful
+-     */
+-    bool setNewAddress(uint32_t addr);
+-
+-    /**
+-     * Generates a new fingerprint image (scans a fingerprint)
+-     *
+-     * @return One of the ZFM20_ERRORS_T values
+-     */
+-    uint8_t generateImage();
+-
+-    /**
+-     * Converts the image in the image buffer (generated by
+-     * generateImage()) and stores it in one of the two characteristics
+-     * buffers, 1 or 2
+-     *
+-     * @param slot Characteristics buffer to use; must be 1 or 2
+-     * @return One of the ZFM20_ERRORS_T values
+-     */
+-    uint8_t image2Tz(int slot);
+-
+-    /**
+-     * Based on the two characteristics buffers (1 & 2), creates a
+-     * fingerprint model. Once a model is successfully created,
+-     * it can be stored in the module with storeModel().
+-     *
+-     * @return One of the ZFM20_ERRORS_T values
+-     */
+-    uint8_t createModel();
+-
+-    /**
+-     * Once a fingerprint model is created, this method can be
+-     * used to store it (via one of the characteristics buffers) in a
+-     * given location.
+-     *
+-     * @param slot Characteristics buffer to store the model, 1 or 2
+-     * @param id Location to store the model
+-     * @return One of the ZFM20_ERRORS_T values
+-     */
+-    uint8_t storeModel(int slot, uint16_t id);
+-
+-    /**
+-     * Deletes a stored model
+-     *
+-     * @param id Location containing the model to delete
+-     * @return One of the ZFM20_ERRORS_T values
+-     */
+-    uint8_t deleteModel(uint16_t id);
+-
+-    /**
+-     * Deletes the model database (DB)
+-     *
+-     * @return One of the ZFM20_ERRORS_T values
+-     */
+-    uint8_t deleteDB();
+-
+-    /**
+-     * Searches the fingerprint DB and returns an ID and score, if found
+-     *
+-     *
+-     * @param slot Slot containing a converted image to search for
+-     * @param id ID if found, 0 otherwise
+-     * @param score Score if found, 0 otherwise
+-     * @return One of the ZFM20_ERRORS_T values
+-     */
+-    uint8_t search(int slot, uint16_t &id, uint16_t &score);
+-
+-    /**
+-     * Compares the features in characteristics buffers 1 and 2 and
+-     * returns a score if they match
+-     *
+-     * @param score Score
+-     * @return One of the ZFM20_ERRORS_T values
+-     */
+-    uint8_t match(uint16_t &score);
+-
+-  private:
+-    mraa::Uart m_uart;
+-    uint32_t m_password;
+-    uint32_t m_address;
+-    upm_clock_t m_clock;
+-  };
+-}
+diff --git a/src/zfm20/zfm20.i b/src/zfm20/zfm20.i
+deleted file mode 100644
+index e93aa2f..0000000
+--- a/src/zfm20/zfm20.i
++++ /dev/null
+@@ -1,24 +0,0 @@
+-%include "../common_top.i"
+-
+-/* BEGIN Java syntax  ------------------------------------------------------- */
+-#ifdef SWIGJAVA
+-%include "arrays_java.i";
+-%include "../java_buffer.i";
+-
+-JAVA_JNI_LOADLIBRARY(javaupm_zfm20)
+-#endif
+-/* END Java syntax */
+-
+-/* BEGIN Common SWIG syntax ------------------------------------------------- */
+-%apply uint16_t &OUTPUT {uint16_t &id};
+-%apply uint16_t &OUTPUT {uint16_t &score};
+-%include "../carrays_uint8_t.i"
+-%include "../carrays_uint16_t.i"
+-%include "../carrays_uint32_t.i"
+-%pointer_functions(int, intp);
+-
+-%{
+-#include "zfm20.hpp"
+-%}
+-%include "zfm20.hpp"
+-/* END Common SWIG syntax */
+diff --git a/src/zfm20/zfm20.json b/src/zfm20/zfm20.json
+deleted file mode 100644
+index 6e02808..0000000
+--- a/src/zfm20/zfm20.json
++++ /dev/null
+@@ -1,66 +0,0 @@
+-{
+-    "Library": "zfm20",
+-    "Description": "ZFM-20 Fingerprint Sensor Module",
+-    "Sensor Class": {
+-        "ZFM20": {
+-            "Name": "API for the ZFM-20 Fingerprint Sensor Module",
+-            "Description": "This is the UPM Module for the ZFM-20 Fingerprint Sensor Module. The Fingerprint Sensor is one optical fingerprint sensor which will make adding fingerprint detection and verification super simple.There's a high powered DSP chip AS601 that does the image rendering, calculation, feature-finding and searching. You can also enroll new fingers directly - up to 162 finger prints can be stored in the onboard FLASH memory. There's a red LED in the lens that lights up during a photo so you know its working.",
+-            "Aliases": ["zfm20", "Grove - Fingerprint Sensor"],
+-            "Categories": ["touch"],
+-            "Connections": ["uart"],
+-            "Project Type": ["medical", "prototyping"],
+-            "Manufacturers": ["Seeed", "ZhianTec"],
+-            "Image": "zfm20.jpg",
+-            "Examples": {
+-                "Java": ["ZFM20_Example.java"],
+-                "Python": ["zfm20-register.py", "zfm20.py"],
+-                "Node.js": ["zfm20-register.js", "zfm20.js"],
+-                "C++": ["zfm20-register.cxx", "zfm20.cxx"]
+-            },
+-            "Specifications": {
+-                "Vsource": {
+-                    "unit": "V",
+-                    "min": 3.6,
+-                    "max": 6.0
+-                },
+-                "Supply Current": {
+-                    "unit": "mA",
+-                    "max" : 120
+-                },
+-                "Operating Temperature": {
+-                    "unit": "°C",
+-                    "min": -20,
+-                    "max": 50
+-                },
+-                "Imaging Time": {
+-                    "unit": "s",
+-                    "typ" : 1
+-                },
+-                "False Acceptance Rate": {
+-                    "unit": "%",
+-                    "rate": 0.001
+-                },
+-                "False Reject Rate": {
+-                    "unit": "%",
+-                    "rate": 1.0
+-                },
+-                "Baud Rate": {
+-                    "unit" : "bps",
+-                    "default": 57600
+-                }
+-            },
+-            "Platforms": {
+-                "Intel Edison": {
+-                    "Notes": ["Might need Grove base shield"]
+-                },
+-                "Arduino 101": {
+-                    "Notes": ["Might need Grove base shield"]
+-                }
+-            },
+-            "Urls": {
+-                "Product Pages": ["https://www.seeedstudio.com/Grove-Fingerprint-Sensor-p-1424.html", "http://wiki.seeed.cc/Grove-Fingerprint_Sensor/"],
+-                "Datasheets": ["https://raw.githubusercontent.com/SeeedDocument/Grove-Fingerprint_Sensor/master/res/ZFM206%E7%94%A8%E6%88%B7%E6%89%8B%E5%86%8CV2.1.pdf", "https://github.com/SeeedDocument/Grove-Fingerprint_Sensor/raw/master/res/ZFM-user-manualV15.pdf"]
+-            }
+-        }
+-    }
+-}
+-- 
+2.7.4
+

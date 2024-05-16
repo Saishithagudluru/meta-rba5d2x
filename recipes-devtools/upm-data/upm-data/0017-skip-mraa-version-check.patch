@@ -1,0 +1,103 @@
+From f24fbab959ff15a393a2644688e78cca70624e8c Mon Sep 17 00:00:00 2001
+From: Ganesh K <ganesh.k@phytec.in>
+Date: Wed, 22 Jan 2020 10:38:06 +0530
+Subject: [PATCH 17/17] skip mraa version check
+
+Signed-off-by: Ganesh K <ganesh.k@phytec.in>
+---
+ CMakeLists.txt | 31 ++++++++++++++-----------------
+ 1 file changed, 14 insertions(+), 17 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 3d8b7eb..8afd42c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -9,7 +9,7 @@ option (BUILDSWIGPYTHON "Build swig python modules" ON)
+ option (BUILDSWIGNODE "Build swig node modules" ON)
+ option (BUILDSWIGJAVA "Build swig java modules" OFF)
+ option (BUILDCORDOVA "Build cordova bindings" OFF)
+-#option (BUILDEXAMPLES "Build C/C++/JAVA examples" OFF)
++option (BUILDEXAMPLES "Build C/C++/JAVA examples" OFF)
+ option (IPK "Generate IPK using CPack" OFF)
+ option (RPM "Generate RPM using CPack" OFF)
+ option (NPM "Generate NPM/GYP tarballs" OFF)
+@@ -93,9 +93,6 @@ endfunction ()
+ # Enable -Wall
+ # GCC-6 added -Wmisleading-indentation to -Wall, skip these for now
+ set (C_CXX_WARNING_FLAGS -Wall
+-    -Wno-unused-result
+-    -Wno-int-conversion
+-    -Wno-maybe-uninitialized
+     -Wno-misleading-indentation
+     -Wno-strict-aliasing
+     -Wno-deprecated-declarations # Temp fix for MRAA deprecated methods
+@@ -119,9 +116,9 @@ upm_add_compile_flags(C ${C_CXX_WARNING_FLAGS}
+ # unsupported flags
+ upm_add_compile_flags(CXX ${C_CXX_WARNING_FLAGS}
+   -Wnon-virtual-dtor
++  -Woverloaded-virtual
+   -Wsign-compare
+   -Wreorder)
+-# -Woverloaded-virtual
+ 
+ # Allow exception error handling for Android C++
+ if (ANDROID)
+@@ -132,17 +129,17 @@ find_package (Threads REQUIRED)
+ find_package (PkgConfig REQUIRED)
+ 
+ # Force a libmraa search and minimum required version every time a config is generated
+-unset(MRAA_FOUND CACHE)
+-set(MRAA_MINIMUM 1.9.0)
+-pkg_check_modules (MRAA REQUIRED mraa>=${MRAA_MINIMUM})
++#unset(MRAA_FOUND CACHE)
++#set(MRAA_MINIMUM 1.9.0)
++#pkg_check_modules (MRAA REQUIRED mraa>=${MRAA_MINIMUM})
+ # Also, get full path to the mraa library
+-find_library(MRAA_LIBRARY NAMES mraa HINTS ${MRAA_LIBDIR})
++#find_library(MRAA_LIBRARY NAMES mraa HINTS ${MRAA_LIBDIR})
+ 
+ # Test MRAA for various compile options
+-include (CheckLibraryExists)
+-check_library_exists (${MRAA_LIBRARIES} mraa_iio_init "${MRAA_LIBDIR}" MRAA_IIO_FOUND)
+-check_library_exists (${MRAA_LIBRARIES} mraa_firmata_init "${MRAA_LIBDIR}" MRAA_FIRMATA_FOUND)
+-check_library_exists (${MRAA_LIBRARIES} mraa_uart_ow_init "${MRAA_LIBDIR}" MRAA_OW_FOUND)
++#include (CheckLibraryExists)
++#check_library_exists (${MRAA_LIBRARIES} mraa_iio_init "${MRAA_LIBDIR}" MRAA_IIO_FOUND)
++#check_library_exists (${MRAA_LIBRARIES} mraa_firmata_init "${MRAA_LIBDIR}" MRAA_FIRMATA_FOUND)
++#check_library_exists (${MRAA_LIBRARIES} mraa_uart_ow_init "${MRAA_LIBDIR}" MRAA_OW_FOUND)
+ 
+ # Check for BACNET
+ pkg_check_modules (BACNET libbacnet)
+@@ -168,9 +165,9 @@ endif (BUILDSWIGNODE)
+ if (BUILDSWIGJAVA)
+   find_package (Java REQUIRED)
+   find_package (JNI REQUIRED)
+-  pkg_check_modules (MRAAJAVA REQUIRED mraajava>=${MRAA_MINIMUM})
++#  pkg_check_modules (MRAAJAVA REQUIRED mraajava>=${MRAA_MINIMUM})
+   # Also, get full path to the mraajava library
+-  find_library(MRAAJAVA_LIBRARY NAMES mraajava HINTS ${MRAA_LIBDIR})
++#  find_library(MRAAJAVA_LIBRARY NAMES mraajava HINTS ${MRAA_LIBDIR})
+ endif (BUILDSWIGJAVA)
+ 
+ # Cordova binding
+@@ -449,7 +446,7 @@ if (IPK)
+   set(CPACK_DEBIAN_PACKAGE_SECTION "libs")
+   set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${TARGET_ARCH})
+   set(CPACK_SYSTEM_NAME ${TARGET_ARCH})
+-  set(CPACK_DEBIAN_PACKAGE_DEPENDS "mraa (>= ${MRAA_VERSION})")
++#  set(CPACK_DEBIAN_PACKAGE_DEPENDS "mraa (>= ${MRAA_VERSION})")
+   set(CPACK_DEBIAN_PACKAGE_PROVIDES "upm-dev, upm-dbg, upm-doc")
+   set(CPACK_DEBIAN_PACKAGE_REPLACES ${CPACK_DEBIAN_PACKAGE_PROVIDES})
+   set(CPACK_DEBIAN_PACKAGE_CONFLICTS ${CPACK_DEBIAN_PACKAGE_PROVIDES})
+@@ -469,7 +466,7 @@ if (RPM)
+       "${upm_VERSION_MAJOR}.${upm_VERSION_MINOR}.${upm_VERSION_PATCH}${upm_PACKAGE_ON_TAG}${VERSION_COMMIT}")
+   set(CPACK_PACKAGE_CONTACT "Intel IoT-Devkit")
+   set(CPACK_PACKAGE_VENDOR "Intel IoT-Devkit")
+-  set(CPACK_RPM_PACKAGE_REQUIRES "mraa >= ${MRAA_VERSION}")
++#  set(CPACK_RPM_PACKAGE_REQUIRES "mraa >= ${MRAA_VERSION}")
+   set(CPACK_RPM_PACKAGE_PROVIDES "${CPACK_PACKAGE_NAME}-devel")
+   set(CPACK_RPM_PACKAGE_LICENSE "MIT")
+   EXECUTE_PROCESS(COMMAND rpm --showrc
+-- 
+2.7.4
+
