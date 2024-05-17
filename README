@@ -10,7 +10,7 @@ https://developer.ruggedboard.com/
 Sources
 =======
 - meta-rba5d2x
-URI: https://github.com/mohseen-ahamad/meta-rba5d2x.git
+URI: https://github.com/Saishithagudluru/meta-rba5d2x.git
 Branch: main
 
 Dependencies
@@ -18,7 +18,7 @@ Dependencies
 This Layer depends on :
 
 - poky
-URI: https://github.com/mohseen-ahamad/poky.git
+URI: https://github.com/Saishithagudluru/poky.git
 Branch:main
 
 - meta-openembedded
