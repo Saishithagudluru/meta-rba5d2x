@@ -34,13 +34,13 @@ mkdir my_dir
 cd my_dir
 
 1/ Clone yocto/poky git repository with the proper branch ready
-git clone https://github.com/mohseen-ahamad/poky.git -b main
+git clone https://github.com/Saishithagudluru/poky.git -b main
 
 2/ Clone meta-openembedded git repository with the proper branch ready
 git clone git://git.openembedded.org/meta-openembedded -b sumo
 
 3/ Clone meta-rba5d2x layer with the proper branch ready
-git clone https://github.com/mohseen-ahamad/meta-rba5d2x.git -b main
+git clone https://github.com/Saishithagudluru/meta-rba5d2x.git -b main
 
 5/ Enter the poky directory to configure the build system and start the build process
 cd ../
