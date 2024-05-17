@@ -1,0 +1,77 @@
+This layer provides support for Rugged Board A5d2x
+==================================================
+
+For more information about the rugged board a5d2x product line see:
+https://www.ruggedboard.com/
+
+Linux, development & Open Source on rugged board:
+https://developer.ruggedboard.com/
+
+Sources
+=======
+- meta-rba5d2x
+URI: https://github.com/mohseen-ahamad/meta-rba5d2x.git
+Branch: main
+
+Dependencies
+============
+This Layer depends on :
+
+- poky
+URI: https://github.com/mohseen-ahamad/poky.git
+Branch:main
+
+- meta-openembedded
+URI: git://git.openembedded.org/meta-openembedded
+URI: http://cgit.openembedded.org/meta-openembedded/
+Branch: sumo
+
+Build procedure
+===============
+
+0/ Create a directory
+mkdir my_dir
+cd my_dir
+
+1/ Clone yocto/poky git repository with the proper branch ready
+git clone https://github.com/mohseen-ahamad/poky.git -b main
+
+2/ Clone meta-openembedded git repository with the proper branch ready
+git clone git://git.openembedded.org/meta-openembedded -b sumo
+
+3/ Clone meta-rba5d2x layer with the proper branch ready
+git clone https://github.com/mohseen-ahamad/meta-rba5d2x.git -b main
+
+5/ Enter the poky directory to configure the build system and start the build process
+cd ../
+
+6/ Initialize build directory
+source oe-init-build-env build-microchip
+
+7/ Edit local.conf to specify the target machine and build the image
+	i) For rugged board a5d2x(SDCARD)
+    		-> Change machine name to "rugged-board-a5d2x-sd1" in conf/local.conf as below 
+			MACHINE ?= "rugged-board-a5d2x-sd1"
+
+    			$ bitbake rb-sd-core-image-minimal
+
+Typical bitbake output
+======================
+Build Configuration:
+BB_VERSION           = "1.38.0"
+BUILD_SYS            = "x86_64-linux"
+NATIVELSBSTRING      = "universal"
+TARGET_SYS           = "arm-poky-linux-gnueabi"
+MACHINE              = "rugged-board-a5d2x-sd1"
+DISTRO               = "poky"
+DISTRO_VERSION       = "2.5.3"
+TUNE_FEATURES        = "arm armv7a vfp thumb neon callconvention-hard cortexa5"
+TARGET_FPU           = "hard"
+meta                 
+meta-poky            
+meta-yocto-bsp       = "main:6ae581677cf34e440e2c65ae41bb009236162213"
+meta-rba5d2x-sumo    = "main:547f09ac46ea0c7fd9a7b9bc4516a8c5d124e01c"
+
+Known issues
+============
+This branch is under development and not fully tested. Some features may not work.
